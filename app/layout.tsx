@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { Manrope, Space_Grotesk } from "next/font/google";
+import type { CSSProperties } from "react";
+import { DM_Sans, Outfit } from "next/font/google";
+import { MotionController } from "./components/MotionController";
 import "./globals.css";
 
-const manrope = Manrope({ variable: "--font-body", subsets: ["latin"] });
-const spaceGrotesk = Space_Grotesk({ variable: "--font-display", subsets: ["latin"] });
+const dmSans = DM_Sans({ subsets: ["latin"], display: "swap" });
+const outfit = Outfit({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: { default: "Grupo JC — Potencial que gera progresso", template: "%s | Grupo JC" },
@@ -13,5 +15,17 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="pt-AO"><body className={`${manrope.variable} ${spaceGrotesk.variable}`}>{children}</body></html>;
+  const fontStyles = {
+    "--display": outfit.style.fontFamily,
+    "--body": dmSans.style.fontFamily,
+  } as CSSProperties;
+
+  return (
+    <html lang="pt-AO">
+      <body className={dmSans.className} style={fontStyles}>
+        <MotionController />
+        {children}
+      </body>
+    </html>
+  );
 }
