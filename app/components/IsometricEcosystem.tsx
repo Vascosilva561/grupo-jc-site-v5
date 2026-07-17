@@ -1,97 +1,138 @@
 import type { CSSProperties } from "react";
 import { companies } from "../data";
 
-const cubePositions = [
-  { x: "19%", y: "18%" },
-  { x: "81%", y: "18%" },
-  { x: "14%", y: "50%" },
-  { x: "86%", y: "50%" },
-  { x: "28%", y: "80%" },
-  { x: "72%", y: "80%" },
+const companyCubes = [
+  { x: 170, y: 138, width: 76, height: 44, depth: 36 },
+  { x: 830, y: 138, width: 76, height: 44, depth: 36 },
+  { x: 105, y: 360, width: 76, height: 44, depth: 36 },
+  { x: 895, y: 360, width: 76, height: 44, depth: 36 },
+  { x: 245, y: 592, width: 76, height: 44, depth: 36 },
+  { x: 755, y: 592, width: 76, height: 44, depth: 36 },
 ];
 
 const connections = [
-  { d: "M 190 185 L 335 310 L 484 440", x: 190, y: 185 },
-  { d: "M 810 185 L 665 310 L 516 440", x: 810, y: 185 },
-  { d: "M 145 455 L 335 455 L 484 455", x: 145, y: 455 },
-  { d: "M 855 455 L 665 455 L 516 455", x: 855, y: 455 },
-  { d: "M 275 735 L 380 645 L 490 485", x: 275, y: 735 },
-  { d: "M 725 735 L 620 645 L 510 485", x: 725, y: 735 },
+  "M 220 180 L 296 224 L 342 198 L 430 249 L 500 289",
+  "M 780 180 L 704 224 L 658 198 L 570 249 L 500 289",
+  "M 172 370 L 276 430 L 350 387 L 405 419",
+  "M 828 370 L 724 430 L 650 387 L 595 419",
+  "M 304 590 L 375 549 L 430 581 L 500 541 L 500 486",
+  "M 696 590 L 625 549 L 570 581 L 500 541 L 500 486",
 ];
 
-function Cube({ logo, name, position, central = false, index = 0 }: {
+type CubeProps = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  depth: number;
   logo: string;
-  name: string;
-  position: { x: string; y: string };
   central?: boolean;
-  index?: number;
-}) {
-  const style = {
-    "--cube-x": position.x,
-    "--cube-y": position.y,
-    "--cube-delay": `${0.18 + index * 0.08}s`,
-  } as CSSProperties;
+  index: number;
+};
+
+function Cube({ x, y, width, height, depth, logo, central = false, index }: CubeProps) {
+  const topFill = central ? "#111827" : "#ffffff";
+  const leftFill = central ? "#080d17" : "#a9d3f7";
+  const rightFill = central ? "#253044" : "#78b9f2";
+  const outline = central ? "#111827" : "#344054";
+  const logoInset = central ? { x: 0.16, y: 0.31, width: 0.68, height: 0.38 } : { x: 0.15, y: 0.25, width: 0.7, height: 0.5 };
+  const style = { "--cube-delay": `${0.18 + index * 0.08}s` } as CSSProperties;
 
   return (
-    <div className={`iso-cube ${central ? "iso-cube--central" : ""}`} style={style} aria-hidden="true">
-      <span className="iso-cube__shadow" />
-      <span className="iso-cube__face iso-cube__face--left" />
-      <span className="iso-cube__face iso-cube__face--right" />
-      <span className="iso-cube__face iso-cube__face--top"><img src={logo} alt="" /></span>
-      <span className="iso-cube__name">{name}</span>
-    </div>
+    <g className={`svg-cube ${central ? "svg-cube--central" : ""}`} transform={`translate(${x} ${y})`} style={style}>
+      <path
+        className="svg-cube__shadow"
+        d={`M ${-width + 18} ${depth + 10} L 18 ${height + depth + 10} L ${width + 30} ${depth + 3} L 28 ${height + depth + 3} Z`}
+      />
+      <polygon
+        points={`${-width},0 0,${height} 0,${height + depth} ${-width},${depth}`}
+        fill={leftFill}
+        stroke={outline}
+      />
+      <polygon
+        points={`0,${height} ${width},0 ${width},${depth} 0,${height + depth}`}
+        fill={rightFill}
+        stroke={outline}
+      />
+      <polygon
+        points={`0,${-height} ${width},0 0,${height} ${-width},0`}
+        fill={topFill}
+        stroke={outline}
+      />
+      <polygon
+        className="svg-cube__top-inset"
+        points={`0,${-height * 0.76} ${width * 0.76},0 0,${height * 0.76} ${-width * 0.76},0`}
+      />
+      <g transform={`matrix(${width} ${height} ${-width} ${height} 0 ${-height})`}>
+        <image
+          href={logo}
+          x={logoInset.x}
+          y={logoInset.y}
+          width={logoInset.width}
+          height={logoInset.height}
+          preserveAspectRatio="xMidYMid meet"
+        />
+      </g>
+    </g>
   );
 }
 
 export function IsometricEcosystem() {
   return (
-    <div
-      className="ecosystem-stage ecosystem-stage--isometric"
-      role="img"
-      aria-label="As seis empresas do Grupo JC ligadas em perspetiva isométrica ao cubo central do grupo"
-    >
-      <div className="isometric-world">
-        <div className="isometric-plane" aria-hidden="true" />
-        <svg className="network-lines" viewBox="0 0 1000 900" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <filter id="blue-glow" x="-40%" y="-40%" width="180%" height="180%">
-              <feGaussianBlur stdDeviation="8" result="blur" />
-              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-            </filter>
-          </defs>
+    <div className="ecosystem-stage">
+      <svg
+        className="isometric-graphic"
+        viewBox="0 0 1000 720"
+        preserveAspectRatio="xMidYMid meet"
+        role="img"
+        aria-label="Empresas ligadas em perspetiva isométrica ao cubo central do Grupo JC"
+      >
+        <defs>
+          <pattern id="iso-grid" width="72" height="42" patternUnits="userSpaceOnUse">
+            <path d="M 0 21 L 36 0 L 72 21 L 36 42 Z" fill="none" stroke="#98a2b3" strokeWidth="0.65" />
+          </pattern>
+          <radialGradient id="grid-fade">
+            <stop offset="20%" stopColor="white" />
+            <stop offset="78%" stopColor="white" stopOpacity=".28" />
+            <stop offset="100%" stopColor="white" stopOpacity="0" />
+          </radialGradient>
+          <mask id="grid-mask"><rect width="1000" height="720" fill="url(#grid-fade)" /></mask>
+          <filter id="blue-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="7" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+
+        <rect className="isometric-grid" width="1000" height="720" fill="url(#iso-grid)" mask="url(#grid-mask)" />
+
+        <g className="network-map">
           {connections.map((connection, index) => {
             const pulseStyle = { "--pulse-delay": `${2 + index * 0.09}s` } as CSSProperties;
             return (
-              <g key={connection.d} style={pulseStyle}>
-                <path className="network-line network-line--base" d={connection.d} pathLength={1} />
-                <path className="network-line network-line--pulse" d={connection.d} pathLength={1} />
-                <circle className="network-source" cx={connection.x} cy={connection.y} r="8" />
+              <g key={connection} style={pulseStyle}>
+                <path className="network-line network-line--base" d={connection} pathLength={1} />
+                <path className="network-line network-line--pulse" d={connection} pathLength={1} />
               </g>
             );
           })}
-          <circle className="network-core-halo" cx="500" cy="455" r="72" />
-        </svg>
+          <ellipse className="network-core-halo" cx="500" cy="492" rx="128" ry="50" />
+        </g>
 
         {companies.map((company, index) => (
-          <Cube
-            key={company.slug}
-            logo={company.logo}
-            name={company.name}
-            position={cubePositions[index]}
-            index={index}
-          />
+          <Cube key={company.slug} {...companyCubes[index]} logo={company.logo} index={index} />
         ))}
 
         <Cube
           central
+          x={500}
+          y={340}
+          width={122}
+          height={70}
+          depth={122}
           logo="/brand/grupo-jc-white.svg"
-          name="Grupo JC"
-          position={{ x: "50%", y: "50%" }}
           index={6}
         />
-      </div>
-      <span className="stage-label stage-label--top">Ecossistema integrado</span>
-      <span className="stage-label stage-label--bottom">Uma visão comum · diferentes forças</span>
+      </svg>
     </div>
   );
 }
