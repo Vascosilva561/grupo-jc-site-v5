@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SiteHeader } from "./components/SiteHeader";
 import { SiteFooter } from "./components/SiteFooter";
 import { ArrowRight, ArrowUpRight } from "./components/ArrowUpRight";
+import { IsometricEcosystem } from "./components/IsometricEcosystem";
 import { companies } from "./data";
 
 const impactItems = [
@@ -35,23 +36,7 @@ export default function Home() {
               <Link href="/empresas" className="button button--ghost">Explorar as empresas <ArrowUpRight /></Link>
             </div>
           </div>
-          <div className="ecosystem-stage" aria-label="Ecossistema de empresas do Grupo JC">
-            <div className="stage-grid" />
-            <div className="core-ring core-ring--outer" />
-            <div className="core-ring core-ring--inner" />
-            <div className="ecosystem-core">
-              <img src="/brand/grupo-jc-icon-white.svg" alt="" />
-              <span>Uma visão comum</span>
-            </div>
-            {companies.map((company, index) => (
-              <div key={company.slug} className={`satellite satellite--${index + 1}`} style={{ "--accent": company.accent } as CSSProperties}>
-                <span className="satellite-dot" />
-                <img src={company.logo} alt={company.name} />
-              </div>
-            ))}
-            <span className="stage-label stage-label--top">Talento nacional</span>
-            <span className="stage-label stage-label--bottom">Estrutura partilhada</span>
-          </div>
+          <IsometricEcosystem />
         </section>
         <div className="company-rail" aria-label="Empresas do Grupo JC">
           <div className="company-rail-track">
