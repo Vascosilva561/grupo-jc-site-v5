@@ -618,7 +618,7 @@ button, input, textarea, select { font: inherit; }
 .home-v2-areas__heading > p, .home-v2-vision__heading > p { margin: 0 0 4px; color: rgba(255,255,255,.75); font-size: 14px; line-height: 1.45; }
 .home-v2-area-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 60px; }
 .home-v2-area { min-height: 483px; display: flex; flex-direction: column; padding: 25px 29px 34px; border: 1px solid rgba(255,255,255,.16); background: #00072B; color: white; transition: transform .2s ease, background .2s ease; }
-.home-v2-area:hover { transform: translateY(-4px); background: #262C4A; }
+.home-v2-area:hover { transform: translateY(-4px); background: #0D1336; }
 .home-v2-area > span { color: rgba(255,255,255,.55); font-size: 10px; }
 .home-v2-area__symbol { height: 205px; position: relative; display: grid; place-items: center; }
 .home-v2-area__symbol i { position: absolute; display: block; }
