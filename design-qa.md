@@ -18,7 +18,7 @@ Viewport: 1265 × 711 CSS px, desktop footer state at the bottom of the home pag
 
 - **Fonts and typography:** Existing Poppins/DM Sans hierarchy is retained; large contact text, small uppercase labels, and muted supporting text follow the reference’s contrast hierarchy.
 - **Spacing and layout rhythm:** Footer inset, top row spacing, grid columns, dividers, and legal row were compared in the combined image. The final inset adjustment aligned the link columns with the reference.
-- **Colors and visual tokens:** Dark navy surface, white content, muted body copy, and `#3BA3FF` labels/underline match the reference direction.
+- **Colors and visual tokens:** Dark navy surface, white content, muted body copy, and `#3BA3FF` section labels match the reference direction. The contact underline is white by default and uses the existing blue hover treatment.
 - **Image quality and assets:** The existing white Grupo JC logo asset is used directly; no replacement visual assets were introduced.
 - **Copy and content:** Existing company, opportunity, and legal copy is preserved and remains fully readable.
 
@@ -27,6 +27,7 @@ Viewport: 1265 × 711 CSS px, desktop footer state at the bottom of the home pag
 1. Initial comparison found a P2 horizontal-inset mismatch: the footer content started too close to the viewport edges.
 2. Fixed by applying a desktop-only 60 px footer inset while preserving the mobile gutter.
 3. Final comparison image shows the corrected layout. No remaining P0/P1/P2 findings.
+4. Follow-up correction: added a 36 px gap between the logo and supporting copy in the home footer, and restored the contact underline to white at rest. The blue underline is retained for hover.
 
 ## Interaction and runtime checks
 

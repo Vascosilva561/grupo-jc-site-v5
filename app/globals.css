@@ -228,7 +228,7 @@ button, input, textarea, select { font: inherit; }
 .footer-top { display: grid; grid-template-columns: 1fr auto; gap: 70px; align-items: center; padding-bottom: 58px; border-bottom: 1px solid var(--dark-line); }
 .footer-logo { width: 180px; }
 .footer-top p { max-width: 430px; margin: 36px 0 0; color: rgba(255,255,255,.62); font-size: 14px; line-height: 1.55; }
-.footer-contact { display: inline-flex; align-items: center; gap: 24px; padding-bottom: 9px; border-bottom: 2px solid #3BA3FF; font: 500 clamp(28px, 4vw, 50px)/1 var(--display); letter-spacing: -.04em; }
+.footer-contact { display: inline-flex; align-items: center; gap: 24px; padding-bottom: 9px; border-bottom: 1px solid currentColor; font: 500 clamp(28px, 4vw, 50px)/1 var(--display); letter-spacing: -.04em; }
 .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 45px; padding-block: 54px; }
 .footer-grid > div { display: flex; flex-direction: column; gap: 12px; }
 .footer-label { margin-bottom: 9px; color: #3BA3FF; font-size: 10px; font-weight: 760; letter-spacing: .08em; text-transform: uppercase; }
@@ -665,6 +665,7 @@ button, input, textarea, select { font: inherit; }
 .home-v2-careers__graphic .evolve { bottom: 100px; left: 55px; background: #f0d000; color: #111827; }
 .home-v2 .site-footer { padding-top: 88px; }
 .home-v2 .footer-top { padding-bottom: 58px; }
+.home-v2 .footer-top p { margin: 36px 0 0; }
 .home-v2 .footer-logo { width: 154px; }
 .home-v2 .footer-contact { min-width: 475px; justify-content: space-between; }
 
