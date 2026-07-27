@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { ArrowUpRight } from "./ArrowUpRight";
 
 const groupSelectors = [
   ".metrics-section",
@@ -49,13 +50,39 @@ const singleSelectors = [
 export function MotionController() {
   const pathname = usePathname();
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [backToTopOnDark, setBackToTopOnDark] = useState(false);
 
   useEffect(() => {
-    const updateBackToTop = () => setShowBackToTop(window.scrollY > 500);
+    const updateBackToTop = () => {
+      setShowBackToTop(window.scrollY > 500);
+
+      const button = document.querySelector<HTMLElement>(".back-to-top");
+      if (!button) return;
+
+      const previousPointerEvents = button.style.pointerEvents;
+      button.style.pointerEvents = "none";
+      let element = document.elementFromPoint(window.innerWidth - 48, window.innerHeight - 48);
+      button.style.pointerEvents = previousPointerEvents;
+
+      while (element) {
+        const background = window.getComputedStyle(element).backgroundColor;
+        const match = background.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+        if (match && (match[4] === undefined || Number(match[4]) > 0.05)) {
+          const [red, green, blue] = match.slice(1, 4).map(Number);
+          setBackToTopOnDark((red * 0.2126 + green * 0.7152 + blue * 0.0722) < 120);
+          return;
+        }
+        element = element.parentElement;
+      }
+    };
 
     updateBackToTop();
     window.addEventListener("scroll", updateBackToTop, { passive: true });
-    return () => window.removeEventListener("scroll", updateBackToTop);
+    window.addEventListener("resize", updateBackToTop);
+    return () => {
+      window.removeEventListener("scroll", updateBackToTop);
+      window.removeEventListener("resize", updateBackToTop);
+    };
   }, [pathname]);
 
   useEffect(() => {
@@ -145,11 +172,11 @@ export function MotionController() {
       <div className="scroll-progress" aria-hidden="true" />
       <button
         type="button"
-        className={`back-to-top ${showBackToTop ? "is-visible" : ""}`}
+        className={`back-to-top ${showBackToTop ? "is-visible" : ""} ${backToTopOnDark ? "is-over-dark" : ""}`}
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         aria-label="Voltar ao topo"
       >
-        <span aria-hidden="true">↑</span>
+        <ArrowUpRight size={20} />
       </button>
     </>
   );
