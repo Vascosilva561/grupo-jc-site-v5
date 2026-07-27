@@ -633,9 +633,12 @@ button, input, textarea, select { font: inherit; }
 .home-v2-area--entertainment .home-v2-area__symbol i:nth-child(3) { display: none; }
 .home-v2-area h3 { max-width: 365px; margin: 0 0 10px; color: inherit; font: 500 34px/1.12 var(--display); letter-spacing: -1.5px; }
 .home-v2-area p { max-width: 365px; margin: 0; color: inherit; font-size: 13px; line-height: 1.4; opacity: .85; }
-.home-v2-vision { padding: 120px 0; background: #111827; color: white; }
+.home-v2-vision { position: relative; isolation: isolate; overflow: hidden; padding: 120px 0; background: #111827; color: white; }
+.home-v2-vision > .shell { position: relative; z-index: 1; }
+.home-v2-vision__spline { position: absolute; inset: 0; z-index: 0; opacity: .72; pointer-events: none; }
+.home-v2-vision__spline::after { content: ""; position: absolute; inset: 0; background: rgba(17,24,39,.28); }
+.home-v2-vision__spline spline-viewer { display: block; width: 100%; height: 100%; }
 .home-v2-vision__heading { min-height: 272px; }
-.home-v2-vision__image { height: 343px; margin-top: 48px; border-radius: 24px; overflow: hidden; }
 .home-v2-impact { padding-block: 120px; }
 .home-v2-impact__heading { text-align: center; }
 .home-v2-impact__heading h2 { margin: 21px 0 0; }
@@ -716,7 +719,6 @@ button, input, textarea, select { font: inherit; }
   .home-v2-area { min-height: 390px; }
   .home-v2-vision { padding-block: 80px; }
   .home-v2-vision__heading { min-height: 0; }
-  .home-v2-vision__image { height: 230px; margin-top: 40px; }
   .home-v2-impact { padding-block: 80px; }
   .home-v2-impact__grid { grid-template-columns: 1fr; margin-top: 42px; }
   .home-v2-impact__grid article, .home-v2-impact__grid article:nth-child(2n) { min-height: 220px; border-right: 0; border-bottom: 1px solid #e0e1e3; }

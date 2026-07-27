@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Script from "next/script";
 import type { ReactNode } from "react";
 import { SiteHeader } from "./components/SiteHeader";
 import { SiteFooter } from "./components/SiteFooter";
@@ -122,12 +123,15 @@ export default function Home() {
       </section>
 
       <section className="home-v2-vision">
+        <Script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.98/build/spline-viewer.js" strategy="afterInteractive" />
+        <div className="home-v2-vision__spline" aria-hidden="true">
+          <spline-viewer url="https://prod.spline.design/NstUGB7T86MqYMi7/scene.splinecode" />
+        </div>
         <div className="shell">
           <div className="home-v2-vision__heading">
             <div><Eyebrow light>O que nos move</Eyebrow><h2>Criamos hoje as<br />bases para o que vem<br />a seguir.</h2></div>
             <p>O Grupo JC nasceu para aproximar diferentes competências, fortalecer negócios e criar uma estrutura capaz de gerar maior impacto.</p>
           </div>
-          <ImagePlaceholder className="home-v2-vision__image" />
         </div>
       </section>
 
