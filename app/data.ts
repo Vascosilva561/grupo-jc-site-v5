@@ -139,7 +139,7 @@ export const companies: Company[] = [
 ];
 
 export const navigation = [
-  { label: "O Grupo", href: "/grupo" },
+  { label: "Sobre o Grupo", href: "/grupo" },
   { label: "Empresas", href: "/empresas" },
   { label: "Áreas", href: "/areas" },
   { label: "Impacto", href: "/impacto" },

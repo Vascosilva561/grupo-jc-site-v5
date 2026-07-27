@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const groupSelectors = [
@@ -18,6 +18,9 @@ const groupSelectors = [
   ".benefit-grid",
   ".career-area-list",
   ".editorial-grid",
+  ".home-v2-metrics",
+  ".home-v2-area-grid",
+  ".home-v2-impact__grid",
 ];
 
 const singleSelectors = [
@@ -28,10 +31,32 @@ const singleSelectors = [
   ".impact-pillars > article",
   ".young-talent > *",
   ".contact-section > *",
+  ".home-v2 .site-header",
+  ".home-v2-hero__copy",
+  ".home-v2-hero__image",
+  ".home-v2-intro__copy",
+  ".home-v2-intro__image",
+  ".home-v2-section-title",
+  ".home-v2-carousel",
+  ".home-v2-areas__heading",
+  ".home-v2-vision__heading",
+  ".home-v2-vision__image",
+  ".home-v2-impact__heading",
+  ".home-v2-impact > .home-v2-text-link",
+  ".home-v2-careers",
 ];
 
 export function MotionController() {
   const pathname = usePathname();
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const updateBackToTop = () => setShowBackToTop(window.scrollY > 500);
+
+    updateBackToTop();
+    window.addEventListener("scroll", updateBackToTop, { passive: true });
+    return () => window.removeEventListener("scroll", updateBackToTop);
+  }, [pathname]);
 
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -115,5 +140,17 @@ export function MotionController() {
     };
   }, [pathname]);
 
-  return <div className="scroll-progress" aria-hidden="true" />;
+  return (
+    <>
+      <div className="scroll-progress" aria-hidden="true" />
+      <button
+        type="button"
+        className={`back-to-top ${showBackToTop ? "is-visible" : ""}`}
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="Voltar ao topo"
+      >
+        <span aria-hidden="true">↑</span>
+      </button>
+    </>
+  );
 }
