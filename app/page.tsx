@@ -110,6 +110,11 @@ export default function Home() {
         <CompanyCarousel />
       </section>
 
+      <div className="home-v2-story">
+        <Script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.98/build/spline-viewer.js" strategy="afterInteractive" />
+        <div className="home-v2-story__spline" aria-hidden="true">
+          <spline-viewer url="https://prod.spline.design/NstUGB7T86MqYMi7/scene.splinecode" />
+        </div>
       <section className="home-v2-areas">
         <div className="shell">
           <div className="home-v2-areas__heading">
@@ -123,10 +128,6 @@ export default function Home() {
       </section>
 
       <section className="home-v2-vision">
-        <Script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.98/build/spline-viewer.js" strategy="afterInteractive" />
-        <div className="home-v2-vision__spline" aria-hidden="true">
-          <spline-viewer url="https://prod.spline.design/NstUGB7T86MqYMi7/scene.splinecode" />
-        </div>
         <div className="shell">
           <div className="home-v2-vision__heading">
             <div><Eyebrow light>O que nos move</Eyebrow><h2>Criamos hoje as<br />bases para o que vem<br />a seguir.</h2></div>
@@ -134,6 +135,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </div>
 
       <section className="shell home-v2-impact">
         <div className="home-v2-impact__heading"><Eyebrow>Impacto além dos negócios</Eyebrow><h2>Crescemos enquanto<br />criamos espaço para outros<br />crescerem.</h2></div>

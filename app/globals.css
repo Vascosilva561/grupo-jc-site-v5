@@ -608,7 +608,11 @@ button, input, textarea, select { font: inherit; }
 .home-v2-company-card__content > span { padding: 7px 10px; border-radius: 999px; background: #b9dcff; color: #111827; font-size: 9px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
 .home-v2-company-card h3 { max-width: 570px; margin: 18px 0 10px; color: #111827; font: 600 42px/1.1 var(--display); letter-spacing: -2px; }
 .home-v2-company-card p { max-width: 600px; margin: 0; color: #111827; font-size: 14px; line-height: 1.4; }
-.home-v2-areas { padding: 120px 0 120px; background: #111827; color: white; }
+.home-v2-story { position: relative; isolation: isolate; overflow: hidden; background: #00072B; }
+.home-v2-story__spline { position: absolute; inset: 0; z-index: 0; opacity: .72; pointer-events: none; }
+.home-v2-story__spline::after { content: ""; position: absolute; inset: 0; background: rgba(0,7,43,.18); }
+.home-v2-story__spline spline-viewer { display: block; width: 100%; height: 100%; }
+.home-v2-areas { position: relative; z-index: 1; padding: 120px 0 120px; background: transparent; color: white; }
 .home-v2-areas__heading, .home-v2-vision__heading { display: grid; grid-template-columns: 1fr 315px; gap: 60px; align-items: end; }
 .home-v2-areas h2, .home-v2-vision h2 { margin: 22px 0 0; color: white; }
 .home-v2-areas__heading > p, .home-v2-vision__heading > p { margin: 0 0 4px; color: rgba(255,255,255,.75); font-size: 14px; line-height: 1.45; }
@@ -633,11 +637,7 @@ button, input, textarea, select { font: inherit; }
 .home-v2-area--entertainment .home-v2-area__symbol i:nth-child(3) { display: none; }
 .home-v2-area h3 { max-width: 365px; margin: 0 0 10px; color: inherit; font: 500 34px/1.12 var(--display); letter-spacing: -1.5px; }
 .home-v2-area p { max-width: 365px; margin: 0; color: inherit; font-size: 13px; line-height: 1.4; opacity: .85; }
-.home-v2-vision { position: relative; isolation: isolate; overflow: hidden; padding: 120px 0; background: #111827; color: white; }
-.home-v2-vision > .shell { position: relative; z-index: 1; }
-.home-v2-vision__spline { position: absolute; inset: 0; z-index: 0; opacity: .72; pointer-events: none; }
-.home-v2-vision__spline::after { content: ""; position: absolute; inset: 0; background: rgba(17,24,39,.28); }
-.home-v2-vision__spline spline-viewer { display: block; width: 100%; height: 100%; }
+.home-v2-vision { position: relative; z-index: 1; padding: 120px 0; background: transparent; color: white; }
 .home-v2-vision__heading { min-height: 272px; }
 .home-v2-impact { padding-block: 120px; }
 .home-v2-impact__heading { text-align: center; }
