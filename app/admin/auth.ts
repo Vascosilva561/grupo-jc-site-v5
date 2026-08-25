@@ -19,10 +19,18 @@ export async function requireCmsAdmin() {
 }
 
 function getAllowedAdminEmails(): Set<string> {
-  return new Set(
+  const allowedEmails = new Set(
     String(env.CMS_ADMIN_EMAILS ?? "")
       .split(",")
       .map((email) => email.trim().toLowerCase())
       .filter(Boolean),
   );
+
+  // Matches the local-only identity in chatgpt-auth.ts. Production must always
+  // use the explicitly configured CMS_ADMIN_EMAILS secret.
+  if (process.env.NODE_ENV === "development") {
+    allowedEmails.add("admin@local.test");
+  }
+
+  return allowedEmails;
 }

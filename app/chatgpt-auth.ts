@@ -15,11 +15,28 @@ const PERCENT_ENCODED_UTF8 = "percent-encoded-utf-8";
 const SIGN_IN_PATH = "/signin-with-chatgpt";
 const SIGN_OUT_PATH = "/signout-with-chatgpt";
 const CALLBACK_PATH = "/callback";
+const LOCAL_DEVELOPMENT_EMAIL = "admin@local.test";
+
+function isLocalDevelopment(): boolean {
+  return process.env.NODE_ENV === "development";
+}
 
 export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
   const requestHeaders = await headers();
   const email = requestHeaders.get(USER_EMAIL_HEADER);
-  if (!email) return null;
+  if (!email) {
+    // The dispatch-owned sign-in routes do not exist in `vinext dev`.
+    // This identity is available only to local development builds and is never
+    // included in a production build.
+    if (isLocalDevelopment()) {
+      return {
+        displayName: "Administrador local",
+        email: LOCAL_DEVELOPMENT_EMAIL,
+        fullName: null,
+      };
+    }
+    return null;
+  }
 
   const encodedFullName = requestHeaders.get(USER_FULL_NAME_HEADER);
   const fullName =
