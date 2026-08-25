@@ -1,19 +1,17 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowUpRight } from "../components/ArrowUpRight";
 import { PageHero } from "../components/PageHero";
 import { SiteFooter } from "../components/SiteFooter";
+import { newsArticles } from "./data";
 
-export const metadata: Metadata = { title: "Notícias" };
-
-const categories = ["Grupo JC", "Empresas", "Tecnologia", "Pessoas", "Impacto", "Parcerias", "Eventos"];
-const cards = [
-  ["Grupo JC", "Uma estrutura criada para ligar diferentes forças", "O Grupo JC nasce para aproximar empresas, competências e oportunidades sob uma visão comum."],
-  ["Tecnologia", "Soluções locais para desafios reais", "Conhecimento do mercado e capacidade técnica trabalham em conjunto para criar produtos relevantes."],
-  ["Pessoas", "Talento que cresce enquanto constrói", "A evolução das empresas também cria espaço para novas experiências, competências e percursos."],
-  ["Impacto", "Crescer com responsabilidade", "Mais do que resultados de negócio, procuramos gerar oportunidades que acompanham o mercado."],
-  ["Empresas", "Seis especializações, um ecossistema", "Conheça as diferentes frentes que formam o portefólio do Grupo JC."],
-  ["Parcerias", "Novas possibilidades começam com uma conversa", "O grupo está aberto a ligações que ajudem empresas, instituições e pessoas a avançar."],
-];
+export const metadata: Metadata = { title: "Notícias", description: "Ideias, projectos e histórias das empresas e pessoas que fazem parte do Grupo JC." };
 
 export default function NewsPage() {
-  return <main><PageHero eyebrow="Notícias" index="06 — 06" title="Ideias, projetos e histórias do Grupo JC." description="Acompanhe as principais novidades do grupo, das suas empresas e das pessoas que tornam cada projeto possível." /><section className="content-section shell"><div className="news-categories">{categories.map((category) => <span key={category}>{category}</span>)}</div><div className="editorial-grid">{cards.map(([category,title,text], index) => <article key={title}><div className={`editorial-art editorial-art--${(index % 3) + 1}`}><span>{String(index + 1).padStart(2,"0")}</span></div><span className="news-tag">{category}</span><h2>{title}</h2><p>{text}</p><small>Conteúdo institucional em preparação</small></article>)}</div></section><SiteFooter /></main>;
+  const articles = newsArticles;
+  return <main><PageHero centered className="page-hero-wrap--news" eyebrow="Notícias" title="Ideias, projectos e histórias do Grupo JC." description="Acompanhe as principais novidades do grupo, das suas empresas e das pessoas que tornam cada projecto possível." />
+    <section className="news-listing news-listing--plain"><div className="shell"><div className="news-listing__bar"><span className="eyebrow">Todas as notícias</span></div><div className="news-card-grid">{articles.map((article, index) => <Link href={`/noticias/${article.slug}`} className="news-story-card" key={article.slug}><NewsVisual art={article.art} number={index + 1} /><div className="news-story-card__meta"><span className="news-tag">{article.category}</span><time>{article.date}</time></div><h2>{article.title}</h2><p>{article.summary}</p><span className="news-story-card__more" aria-label={`Ler notícia: ${article.title}`}><ArrowUpRight /></span></Link>)}</div></div></section><SiteFooter />
+  </main>;
 }
+
+function NewsVisual({ art, number }: { art: string; number: number }) { return <div className={`news-visual news-visual--${art}`} aria-hidden="true"><span>{String(number).padStart(2, "0")}</span><i /><b /><em /></div>; }

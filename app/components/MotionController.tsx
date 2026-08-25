@@ -13,15 +13,18 @@ const groupSelectors = [
   ".news-grid",
   ".simple-grid",
   ".capability-cloud",
-  ".directory-grid",
   ".company-facts",
   ".impact-data-grid",
   ".benefit-grid",
   ".career-area-list",
   ".editorial-grid",
+  ".news-card-grid",
   ".home-v2-metrics",
   ".home-v2-area-grid",
   ".home-v2-impact__grid",
+  ".sobre-values-grid",
+  ".sobre-purpose-grid",
+  ".areas-overview__grid",
 ];
 
 const singleSelectors = [
@@ -45,6 +48,21 @@ const singleSelectors = [
   ".home-v2-impact__heading",
   ".home-v2-impact > .home-v2-text-link",
   ".home-v2-careers",
+  ".sobre-hero-content",
+  ".empresas-hero",
+  ".sobre-history-inner > *",
+  ".sobre-values-head",
+  ".sobre-leadership-banner > .shell",
+  ".sobre-leadership-photo",
+  ".sobre-leadership-content",
+  ".directory-grid .directory-card-content",
+  ".news-listing__bar",
+  ".news-article-header__copy",
+  ".news-article-header .news-visual",
+  ".news-article-details",
+  ".news-article-body__content",
+  ".news-article-body__content > section",
+  ".next-news",
 ];
 
 export function MotionController() {
@@ -93,38 +111,66 @@ export function MotionController() {
     root.classList.add("js-motion");
 
     const revealTargets = new Set<Element>();
-    document.querySelectorAll(".reveal").forEach((element) => revealTargets.add(element));
-
-    groupSelectors.forEach((selector) => {
-      document.querySelectorAll(selector).forEach((group) => {
-        Array.from(group.children).forEach((child, index) => {
-          const element = child as HTMLElement;
-          element.classList.add("motion-item");
-          element.style.setProperty("--motion-delay", `${Math.min(index, 7) * 70}ms`);
-          revealTargets.add(element);
-        });
-      });
-    });
-
-    document.querySelectorAll(singleSelectors.join(",")).forEach((element, index) => {
-      const item = element as HTMLElement;
-      item.classList.add("motion-item");
-      item.style.setProperty("--motion-delay", `${(index % 3) * 70}ms`);
-      revealTargets.add(item);
-    });
-
+    const observedTargets = new Set<Element>();
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
           entry.target.classList.add("is-visible");
+          observedTargets.delete(entry.target);
           observer.unobserve(entry.target);
         });
       },
       { threshold: 0.12, rootMargin: "0px 0px -7% 0px" },
     );
 
-    revealTargets.forEach((target) => observer.observe(target));
+    const registerTarget = (element: Element, delay: number) => {
+      const item = element as HTMLElement;
+      item.classList.add("motion-item");
+      item.style.setProperty("--motion-delay", `${delay}ms`);
+      revealTargets.add(item);
+
+      if (item.classList.contains("is-visible")) return;
+
+      const bounds = item.getBoundingClientRect();
+      const isAlreadyVisible = bounds.top < window.innerHeight * 0.93 && bounds.bottom > 0;
+      if (isAlreadyVisible) {
+        item.classList.add("is-visible");
+        observer.unobserve(item);
+        observedTargets.delete(item);
+        return;
+      }
+
+      if (!observedTargets.has(item)) {
+        observer.observe(item);
+        observedTargets.add(item);
+      }
+    };
+
+    const registerTargets = () => {
+      document.querySelectorAll(".reveal").forEach((element) => registerTarget(element, 0));
+
+      groupSelectors.forEach((selector) => {
+        document.querySelectorAll(selector).forEach((group) => {
+          Array.from(group.children).forEach((child, index) => {
+            registerTarget(child, Math.min(index, 7) * 70);
+          });
+        });
+      });
+
+      document.querySelectorAll(singleSelectors.join(",")).forEach((element, index) => {
+        registerTarget(element, (index % 3) * 70);
+      });
+    };
+
+    registerTargets();
+
+    // Filters and client-side route changes can replace cards after this effect runs.
+    // Register those nodes as soon as React commits them so they never remain hidden.
+    const mutationObserver = new MutationObserver(() => {
+      window.requestAnimationFrame(registerTargets);
+    });
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
 
     const progress = document.querySelector<HTMLElement>(".scroll-progress");
     let ticking = false;
@@ -160,6 +206,7 @@ export function MotionController() {
 
     return () => {
       observer.disconnect();
+      mutationObserver.disconnect();
       window.removeEventListener("scroll", onScroll);
       stage?.removeEventListener("pointermove", onPointerMove);
       stage?.removeEventListener("pointerleave", resetStage);

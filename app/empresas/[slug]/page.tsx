@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { companies } from "../../data";
 import { SiteHeader } from "../../components/SiteHeader";
 import { SiteFooter } from "../../components/SiteFooter";
-import { ArrowRight, ArrowUpRight } from "../../components/ArrowUpRight";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "../../components/ArrowUpRight";
 
 export function generateStaticParams() {
   return companies.map((company) => ({ slug: company.slug }));
@@ -28,8 +28,9 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
       <div className="company-detail-hero">
         <SiteHeader dark />
         <section className="shell company-detail-hero-inner">
+          <Link href="/empresas" className="company-detail-back"><ArrowLeft size={14} /> Voltar para empresas</Link>
           <div className="company-detail-brand"><span>{company.category}</span><div><img src={company.logo} alt={company.name} /></div></div>
-          <div className="company-detail-copy"><h1>{company.tagline}</h1><p>{company.description}</p><a href={company.website} target="_blank" rel="noreferrer" className="button button--lime">Visitar website oficial <ArrowUpRight /></a></div>
+          <div className="company-detail-copy"><h1>{company.tagline}</h1><p>{company.description}</p><a href={company.website} target="_blank" rel="noreferrer" className="button button--lime">Visitar website oficial <ArrowRight /></a></div>
           <span className="company-detail-index">{String(companies.indexOf(company) + 1).padStart(2, "0")} / {String(companies.length).padStart(2, "0")}</span>
         </section>
       </div>

@@ -1,5 +1,27 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1787671942027,
+      "tag": "0000_nappy_wasp",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1787672160207,
+      "tag": "0001_thick_absorbing_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1787672204973,
+      "tag": "0002_seed_initial_news",
+      "breakpoints": true
+    }
+  ]
 }

@@ -26,9 +26,7 @@ export function SiteFooter() {
           </div>
           <div>
             <span className="footer-label">Oportunidades</span>
-            <Link href="/carreiras">Carreiras</Link>
-            <Link href="/carreiras#jovens">Jovens talentos</Link>
-            <Link href="/carreiras#candidatura">Candidatura espontânea</Link>
+            <Link href="/candidatura">Candidatura espontânea</Link>
           </div>
           <div>
             <span className="footer-label">Ligações</span>
