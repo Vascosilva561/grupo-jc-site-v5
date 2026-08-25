@@ -40,6 +40,7 @@ export default async function AdminPage() {
           <p className="eyebrow">Administração</p>
           <h1>Notícias.</h1>
           <p>Conteúdo disponível no site institucional.</p>
+          <Link className="admin-submit" href="/admin/posts/new">Nova notícia</Link>
         </div>
         <div className="admin-list" aria-label="Lista de notícias">
           <div className="admin-list__heading">
@@ -47,7 +48,7 @@ export default async function AdminPage() {
             <span>Estado</span>
           </div>
           {articles.map((article) => (
-            <article className="admin-post-row" key={article.id}>
+            <Link className="admin-post-row" href={`/admin/posts/${article.id}`} key={article.id}>
               <div>
                 <p>{article.category ?? "Sem categoria"}</p>
                 <h2>{article.title}</h2>
@@ -55,7 +56,7 @@ export default async function AdminPage() {
               <span className={`admin-status admin-status--${article.status}`}>
                 {article.status === "published" ? "Publicado" : article.status === "draft" ? "Rascunho" : "Arquivado"}
               </span>
-            </article>
+            </Link>
           ))}
         </div>
       </section>
