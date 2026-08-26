@@ -158,10 +158,10 @@ export default function Home() {
 
       <section className="shell home-v2-careers">
         <div className="home-v2-careers__copy">
-          <Eyebrow light>Candidatura espontânea</Eyebrow>
-          <h2>O seu próximo passo<br />{" "}pode começar<br />{" "}aqui.</h2>
-          <p>Partilhe o seu perfil e mostre-nos como gostaria de contribuir para o futuro do Grupo JC.</p>
-          <Link href="/candidatura" className="home-v2-button home-v2-button--blue">Enviar candidatura <ArrowRight /></Link>
+          <Eyebrow light>Fale connosco</Eyebrow>
+          <h2>Vamos conversar<br />{" "}sobre o que vem<br />{" "}a seguir.</h2>
+          <p>Tem uma ideia, projecto ou desafio? Entre em contacto com o Grupo JC e descubra como podemos avançar juntos.</p>
+          <Link href="/contactos" className="home-v2-button home-v2-button--blue">Entrar em contacto <ArrowRight /></Link>
         </div>
         <div className="home-v2-careers__graphic" aria-hidden="true"><i /><i /><i /><div><img src="/brand/grupo-jc-icon-black.svg" alt="" /></div><b className="learn">APRENDER</b><b className="create">CRIAR</b><b className="evolve">EVOLUIR</b></div>
       </section>
