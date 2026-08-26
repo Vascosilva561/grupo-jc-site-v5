@@ -53,7 +53,6 @@ export default async function NewsPage({ searchParams }: Props) {
   return (
     <main>
       <SiteHeader />
-      <div className="site-header-spacer" />
       <PageHero
         centered
         className="page-hero-wrap--news"

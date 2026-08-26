@@ -77,7 +77,6 @@ export default async function NewsArticlePage({ params }: Props) {
   return (
     <main className="news-article-page">
       <SiteHeader />
-      <div className="site-header-spacer" />
       <header className="news-article-header shell">
         <Link className="news-back" href="/noticias">
           <ArrowLeft size={17} /> Todas as notícias
