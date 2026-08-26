@@ -793,6 +793,12 @@ a:hover svg.arrow-right, button:hover svg.arrow-right { transform: translateX(3p
   .impact-manifesto { padding-block: 90px 20px; gap: 40px; }
   .impact-manifesto__image { min-height: min(94vw, 520px); }
   .area-directory__item .area-directory-meta { flex-direction: column; }
+  .area-directory { padding-block: 24px 72px; }
+  .area-directory > article { gap: 28px; padding-block: 56px; }
+  .area-directory-meta { gap: 10px; padding: 0 0 8px; }
+  .area-directory-body > p { margin-bottom: 24px; }
+  .skill-grid { margin-bottom: 28px; }
+  .skill-grid span { min-height: 54px; padding: 14px 16px; }
   .skill-grid { grid-template-columns: 1fr; }
   .benefit-grid { grid-template-columns: 1fr 1fr; }
   .young-talent { grid-template-columns: 1fr; }
