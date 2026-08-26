@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FileText, LayoutDashboard, LogOut, Shield, Tags, Users } from "lucide-react";
+import { FileText, LayoutDashboard, LogOut, Users } from "lucide-react";
 import { logoutAction } from "./auth";
 
 type NavItem = [string, string, any];
@@ -23,7 +23,7 @@ export function AdminLayout({
 
   // Taxonomy and profiles are strictly restricted to Administrador.
   if (role === "admin") {
-    navigation.push(["Tags", "/admin/tags", Tags]);
+    navigation.push(["Categorias", "/admin/tags", FileText]);
     navigation.push(["Perfis", "/admin/profiles", Users]);
   }
 

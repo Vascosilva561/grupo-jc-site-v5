@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { getDb } from "../../db";
-import { categories, cmsProfiles, tags } from "../../db/schema";
+import { categories, cmsProfiles } from "../../db/schema";
 import { requireCmsAdmin } from "./auth";
 import { hashPassword } from "./crypto";
 
@@ -14,7 +14,6 @@ const slugify = (v: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
-const validTagColors = new Set(["blue", "green", "orange", "purple"]);
 
 // Category actions
 export async function createCategory(data: FormData) {
@@ -59,53 +58,6 @@ export async function deleteCategory(id: number) {
   await requireCmsAdmin();
   const db = await getDb();
   await db.delete(categories).where(eq(categories.id, id));
-  redirect("/admin/tags");
-}
-
-// Tag actions
-export async function createTag(data: FormData) {
-  await requireCmsAdmin();
-  const name = String(data.get("name") ?? "").trim();
-  if (!name) throw new Error("Nome obrigatório");
-  const color = String(data.get("color") ?? "blue");
-  if (!validTagColors.has(color)) throw new Error("Cor de tag inválida.");
-  const db = await getDb();
-  const slug = slugify(name);
-  if (!slug) throw new Error("O nome deve conter letras ou números.");
-  if (await db.select({ id: tags.id }).from(tags).where(eq(tags.slug, slug)).get()) throw new Error("Já existe uma tag com este nome.");
-  await db.insert(tags).values({
-    name,
-    slug,
-    color,
-  });
-  redirect("/admin/tags");
-}
-
-export async function deleteTag(id: number) {
-  await requireCmsAdmin();
-  const db = await getDb();
-  await db.delete(tags).where(eq(tags.id, id));
-  redirect("/admin/tags");
-}
-
-export async function updateTag(id: number, data: FormData) {
-  await requireCmsAdmin();
-  const name = String(data.get("name") ?? "").trim();
-  if (!name) throw new Error("Nome obrigatório");
-  const color = String(data.get("color") ?? "blue");
-  if (!validTagColors.has(color)) throw new Error("Cor de tag inválida.");
-  const db = await getDb();
-  const slug = slugify(name);
-  const duplicate = await db.select({ id: tags.id }).from(tags).where(eq(tags.slug, slug)).get();
-  if (duplicate && duplicate.id !== id) throw new Error("Já existe uma tag com este nome.");
-  await db
-    .update(tags)
-    .set({
-      name,
-      slug,
-      color,
-    })
-    .where(eq(tags.id, id));
   redirect("/admin/tags");
 }
 

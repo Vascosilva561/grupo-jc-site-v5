@@ -25,7 +25,6 @@ export interface PostRowData {
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
-  tagIds: number[];
 }
 
 interface CategoryOption {
@@ -33,16 +32,9 @@ interface CategoryOption {
   name: string;
 }
 
-interface TagOption {
-  id: number;
-  name: string;
-  color: string;
-}
-
 interface PostsManagerProps {
   initialPosts: PostRowData[];
   categories: CategoryOption[];
-  tags: TagOption[];
   userDisplayName: string;
 }
 
@@ -66,7 +58,7 @@ function formatDateTime(isoString: string | null | undefined): { date: string; t
   }
 }
 
-export function PostsManager({ initialPosts, categories, tags, userDisplayName }: PostsManagerProps) {
+export function PostsManager({ initialPosts, categories, userDisplayName }: PostsManagerProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -144,7 +136,6 @@ export function PostsManager({ initialPosts, categories, tags, userDisplayName }
         >
           <PostForm
             categories={categories}
-            tags={tags}
             authorDefault={userDisplayName}
             action={createPost}
           />
@@ -323,10 +314,8 @@ export function PostsManager({ initialPosts, categories, tags, userDisplayName }
                           readingMinutes: post.readingMinutes,
                           authorName: post.authorName,
                           publishedAt: post.publishedAt,
-                          tagIds: post.tagIds,
                         }}
                         authorDefault={userDisplayName}
-                        tags={tags}
                         action={updatePost.bind(null, post.id)}
                       />
                     </CmsModal>

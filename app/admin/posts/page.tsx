@@ -1,6 +1,6 @@
 import { desc, eq } from "drizzle-orm";
 import { getDb } from "../../../db";
-import { categories, postTags, posts, tags } from "../../../db/schema";
+import { categories, posts } from "../../../db/schema";
 import { AdminLayout } from "../AdminLayout";
 import { requireCmsUser } from "../auth";
 import { PostsManager, PostRowData } from "./PostsManager";
@@ -11,7 +11,7 @@ export default async function PostsPage() {
   const user = await requireCmsUser();
   const db = await getDb();
 
-  const [rows, allCategories, allTags, postTagRows] = await Promise.all([
+  const [rows, allCategories] = await Promise.all([
     db
       .select({
         id: posts.id,
@@ -35,24 +35,13 @@ export default async function PostsPage() {
       .leftJoin(categories, eq(posts.categoryId, categories.id))
       .orderBy(desc(posts.updatedAt)),
     db.select({ id: categories.id, name: categories.name }).from(categories),
-    db.select({ id: tags.id, name: tags.name, color: tags.color }).from(tags).orderBy(tags.name),
-    db.select({ postId: postTags.postId, tagId: postTags.tagId }).from(postTags),
   ]);
-
-  const tagsByPost = new Map<number, number[]>();
-  for (const row of postTagRows) {
-    const current = tagsByPost.get(row.postId) ?? [];
-    current.push(row.tagId);
-    tagsByPost.set(row.postId, current);
-  }
-  const rowsWithTags = rows.map((row) => ({ ...row, tagIds: tagsByPost.get(row.id) ?? [] }));
 
   return (
     <AdminLayout userName={user.displayName} role={user.role} active="/admin/posts">
       <PostsManager
-        initialPosts={rowsWithTags as PostRowData[]}
+        initialPosts={rows as PostRowData[]}
         categories={allCategories}
-        tags={allTags}
         userDisplayName={user.displayName}
       />
     </AdminLayout>

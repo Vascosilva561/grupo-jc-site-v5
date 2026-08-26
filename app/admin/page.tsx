@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { desc, eq, sql } from "drizzle-orm";
-import { ArrowUpRight, FileText, Plus, Tags, Users } from "lucide-react";
+import { ArrowUpRight, FileText, Users } from "lucide-react";
 import { getDb } from "../../db";
-import { categories, cmsProfiles, posts, tags } from "../../db/schema";
+import { categories, cmsProfiles, posts } from "../../db/schema";
 import { AdminLayout } from "./AdminLayout";
 import { requireCmsUser } from "./auth";
 import { CmsModal } from "./components/CmsModal";
@@ -14,10 +14,10 @@ export const dynamic = "force-dynamic";
 export default async function AdminPage() {
   const user = await requireCmsUser();
   const db = await getDb();
-  const [allPosts, published, tagCount, profileCount, recent, allCategories] = await Promise.all([
+  const [allPosts, published, categoryCount, profileCount, recent, allCategories] = await Promise.all([
     db.select({ count: sql<number>`count(*)` }).from(posts).get(),
     db.select({ count: sql<number>`count(*)` }).from(posts).where(eq(posts.status, "published")).get(),
-    db.select({ count: sql<number>`count(*)` }).from(tags).get(),
+    db.select({ count: sql<number>`count(*)` }).from(categories).get(),
     db.select({ count: sql<number>`count(*)` }).from(cmsProfiles).get(),
     db.select({ id: posts.id, title: posts.title, status: posts.status, category: categories.name }).from(posts).leftJoin(categories, eq(posts.categoryId, categories.id)).orderBy(desc(posts.updatedAt)).limit(5),
     db.select({ id: categories.id, name: categories.name }).from(categories),
@@ -25,7 +25,7 @@ export default async function AdminPage() {
   const cards: [string, number, any][] = [
     ["Total de posts", allPosts?.count ?? 0, FileText],
     ["Publicados", published?.count ?? 0, ArrowUpRight],
-    ["Tags", tagCount?.count ?? 0, Tags],
+    ["Categorias", categoryCount?.count ?? 0, FileText],
   ];
   if (user.role === "admin") {
     cards.push(["Perfis", profileCount?.count ?? 0, Users]);

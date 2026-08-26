@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { env } from "cloudflare:workers";
 import { getDb } from "../../../db";
-import { postTags, posts } from "../../../db/schema";
+import { posts } from "../../../db/schema";
 import { requireCmsAdmin, requireCmsUser } from "../auth";
 
 const validStatuses = new Set(["draft", "published", "scheduled", "archived"]);
@@ -17,12 +17,11 @@ export async function createPost(formData: FormData) {
   const values = await readPostValues(formData, user.displayName);
   const db = await getDb();
 
-  const inserted = await db.insert(posts).values({
+  await db.insert(posts).values({
     ...values,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-  }).returning({ id: posts.id }).get();
-  await replacePostTags(db, inserted.id, readTagIds(formData));
+  });
   redirect("/admin/posts");
 }
 
@@ -46,19 +45,7 @@ export async function updatePost(id: number, formData: FormData) {
       updatedAt: new Date().toISOString(),
     })
     .where(eq(posts.id, id));
-  await replacePostTags(db, id, readTagIds(formData));
   redirect("/admin/posts");
-}
-
-async function replacePostTags(db: Awaited<ReturnType<typeof getDb>>, postId: number, tagIds: number[]) {
-  await db.delete(postTags).where(eq(postTags.postId, postId));
-  if (tagIds.length) {
-    await db.insert(postTags).values(tagIds.map((tagId) => ({ postId, tagId })));
-  }
-}
-
-function readTagIds(formData: FormData): number[] {
-  return [...new Set(formData.getAll("tagIds").map((value) => Number(value)).filter((value) => Number.isInteger(value) && value > 0))];
 }
 
 export async function deletePost(id: number) {

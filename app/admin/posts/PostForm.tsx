@@ -7,7 +7,6 @@ import { CmsSelect, type CmsSelectOption } from "../components/CmsSelect";
 import { RichTextEditor } from "../components/RichTextEditor";
 
 type Category = { id: number; name: string };
-type Tag = { id: number; name: string; color: string };
 export type PostFormValues = {
   title?: string | null;
   slug?: string | null;
@@ -21,12 +20,10 @@ export type PostFormValues = {
   readingMinutes?: number | null;
   authorName?: string | null;
   publishedAt?: string | null;
-  tagIds?: number[];
 };
 
 interface PostFormProps {
   categories: Category[];
-  tags: Tag[];
   post?: PostFormValues;
   authorDefault?: string;
   action: (formData: FormData) => void | Promise<void>;
@@ -35,7 +32,6 @@ interface PostFormProps {
 
 export function PostForm({
   categories,
-  tags,
   post,
   authorDefault = "Administrador",
   action,
@@ -54,7 +50,6 @@ export function PostForm({
     readingMinutes: 3,
     authorName: authorDefault,
     publishedAt: null,
-    tagIds: [],
   };
 
   const [title, setTitle] = useState(current.title || "");
@@ -216,20 +211,6 @@ export function PostForm({
           altName="featuredImageAlt"
         />
 
-        {tags.length > 0 && (
-          <div className="cms-field-block">
-            <span className="cms-field-label">Tags</span>
-            <div className="cms-tag-picker">
-              {tags.map((tag) => (
-                <label className="cms-tag-picker__option" key={tag.id}>
-                  <input type="checkbox" name="tagIds" value={tag.id} defaultChecked={current.tagIds?.includes(tag.id)} />
-                  <span className={`cms-tag-dot cms-tag-dot--${tag.color}`} />
-                  {tag.name}
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Rich Text Editor for Content */}
         <div className="cms-field-block">

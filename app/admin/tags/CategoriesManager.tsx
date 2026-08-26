@@ -84,7 +84,7 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
       <header className="cms-top">
         <div>
           <p>Organização</p>
-          <h1>Categorias & Tags</h1>
+          <h1>Categorias</h1>
         </div>
         <CmsModal
           title="Nova categoria"
@@ -138,7 +138,7 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
       {/* Table */}
       <div className="cms-table cms-table--categories">
         <div className="cms-table__head cms-table__head--categories">
-          <div className="cms-col cms-col--cat-name">Categoria / Tag</div>
+          <div className="cms-col cms-col--cat-name">Categoria</div>
           <div className="cms-col cms-col--cat-slug">Identificador</div>
           <div className="cms-col cms-col--cat-count">Notícias Atreladas</div>
           <div className="cms-col cms-col--cat-date">Data de Criação</div>
