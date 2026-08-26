@@ -14,8 +14,9 @@ const validArt = new Set([
 export async function createPost(formData: FormData) {
   await requireCmsAdmin();
   const values = readPostValues(formData);
+  const db = await getDb();
 
-  await getDb().insert(posts).values({
+  await db.insert(posts).values({
     ...values,
     publishedAt: values.status === "published" ? new Date().toISOString() : null,
     createdAt: new Date().toISOString(),
@@ -27,7 +28,8 @@ export async function createPost(formData: FormData) {
 export async function updatePost(id: number, formData: FormData) {
   await requireCmsAdmin();
   const values = readPostValues(formData);
-  const existing = await getDb()
+  const db = await getDb();
+  const existing = await db
     .select({ publishedAt: posts.publishedAt })
     .from(posts)
     .where(eq(posts.id, id))
@@ -35,7 +37,7 @@ export async function updatePost(id: number, formData: FormData) {
 
   if (!existing) redirect("/admin");
 
-  await getDb()
+  await db
     .update(posts)
     .set({
       ...values,

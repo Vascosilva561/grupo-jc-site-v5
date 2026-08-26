@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 /** Editorial categories shown in the public news section. */
 export const categories = sqliteTable("categories", {
@@ -52,3 +52,26 @@ export const posts = sqliteTable(
     index("idx_posts_category_id").on(table.categoryId),
   ],
 );
+
+export const tags = sqliteTable("tags", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull().unique(),
+  slug: text("slug").notNull().unique(),
+  color: text("color").notNull().default("blue"),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const postTags = sqliteTable("post_tags", {
+  postId: integer("post_id").notNull().references(() => posts.id, { onDelete: "cascade" }),
+  tagId: integer("tag_id").notNull().references(() => tags.id, { onDelete: "cascade" }),
+}, (table) => [primaryKey({ columns: [table.postId, table.tagId] })]);
+
+export const cmsProfiles = sqliteTable("cms_profiles", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  role: text("role", { enum: ["admin", "editor"] }).notNull().default("editor"),
+  status: text("status", { enum: ["active", "inactive"] }).notNull().default("active"),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
