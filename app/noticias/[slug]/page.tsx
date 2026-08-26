@@ -45,7 +45,6 @@ export default async function NewsArticlePage({ params }: Props) {
         featuredImageAlt: posts.featuredImageAlt,
         categoryName: categories.name,
         categorySlug: categories.slug,
-        authorName: posts.authorName,
         publishedAt: posts.publishedAt,
         readingMinutes: posts.readingMinutes,
       })
@@ -107,12 +106,8 @@ export default async function NewsArticlePage({ params }: Props) {
           <time dateTime={article.publishedAt || ""}>{dateStr}</time>
           <i />
           <small>{readingTimeStr}</small>
-          {article.authorName && (
-            <>
-              <i />
-              <small>Por {article.authorName}</small>
-            </>
-          )}
+          <i />
+          <small>Por Grupo JC</small>
         </div>
       </header>
 
