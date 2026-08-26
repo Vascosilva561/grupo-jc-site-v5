@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers";
-import { notFound } from "next/navigation";
-import { requireChatGPTUser } from "../chatgpt-auth";
+import { notFound, redirect } from "next/navigation";
+import { getChatGPTUser } from "../chatgpt-auth";
 
 /**
  * Requires both a ChatGPT identity and an explicit CMS administrator entry.
@@ -8,7 +8,8 @@ import { requireChatGPTUser } from "../chatgpt-auth";
  * and API route.
  */
 export async function requireCmsAdmin() {
-  const user = await requireChatGPTUser("/admin");
+  const user = await getChatGPTUser();
+  if (!user) redirect("/admin/login");
   const allowedEmails = getAllowedAdminEmails();
 
   if (!allowedEmails.has(user.email.toLowerCase())) {
