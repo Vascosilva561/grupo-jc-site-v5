@@ -4,7 +4,6 @@ import { desc, eq, asc } from "drizzle-orm";
 import { ArrowUpRight } from "../components/ArrowUpRight";
 import { PageHero } from "../components/PageHero";
 import { SiteFooter } from "../components/SiteFooter";
-import { SiteHeader } from "../components/SiteHeader";
 import { getDb } from "../../db";
 import { categories, posts } from "../../db/schema";
 
@@ -52,7 +51,6 @@ export default async function NewsPage({ searchParams }: Props) {
 
   return (
     <main>
-      <SiteHeader />
       <PageHero
         centered
         className="page-hero-wrap--news"
