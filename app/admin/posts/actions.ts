@@ -51,6 +51,13 @@ export async function updatePost(id: number, formData: FormData) {
   redirect("/admin");
 }
 
+export async function deletePost(id: number) {
+  await requireCmsAdmin();
+  const db = await getDb();
+  await db.delete(posts).where(eq(posts.id, id));
+  redirect("/admin/posts");
+}
+
 function readPostValues(formData: FormData) {
   const title = value(formData, "title");
   const status = value(formData, "status");
