@@ -1,4 +1,4 @@
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export type ChatGPTUser = {
@@ -29,6 +29,10 @@ export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
     // This identity is available only to local development builds and is never
     // included in a production build.
     if (isLocalDevelopment()) {
+      const cookieStore = await cookies();
+      if (cookieStore.get("dev_signed_out")?.value === "1") {
+        return null;
+      }
       return {
         displayName: "Administrador local",
         email: LOCAL_DEVELOPMENT_EMAIL,

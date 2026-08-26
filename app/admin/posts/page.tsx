@@ -1,11 +1,49 @@
-import { desc } from "drizzle-orm";
-import { Edit3, Plus, Trash2 } from "lucide-react";
+import { desc, eq } from "drizzle-orm";
 import { getDb } from "../../../db";
 import { categories, posts } from "../../../db/schema";
 import { AdminLayout } from "../AdminLayout";
-import { requireCmsAdmin } from "../auth";
-import { CmsModal } from "../components/CmsModal";
-import { PostForm } from "./PostForm";
-import { createPost, deletePost, updatePost } from "./actions";
-export const dynamic="force-dynamic";
-export default async function PostsPage(){const user=await requireCmsAdmin(),db=await getDb(),[rows,allCategories]=await Promise.all([db.select().from(posts).orderBy(desc(posts.updatedAt)),db.select({id:categories.id,name:categories.name}).from(categories)]);return <AdminLayout userName={user.displayName} active="/admin/posts"><header className="cms-top"><div><p>Conteúdo</p><h1>Posts</h1></div><CmsModal title="Nova notícia" trigger={<><Plus size={17}/> Nova notícia</>}><PostForm categories={allCategories} action={createPost}/></CmsModal></header><div className="cms-table"><div className="cms-table__head"><span>Artigo</span><span>Estado</span><span>Ações</span></div>{rows.map(post=><div className="cms-table__row" key={post.id}><strong>{post.title}</strong><em className={`cms-pill cms-pill--${post.status}`}>{post.status==="published"?"Publicado":post.status==="draft"?"Rascunho":"Arquivado"}</em><div className="cms-actions"><CmsModal title="Editar notícia" trigger={<Edit3 size={16}/> }><PostForm categories={allCategories} post={{...post,categoryId:post.categoryId??null}} action={updatePost.bind(null,post.id)}/></CmsModal><CmsModal title="Remover notícia" tone="danger" trigger={<Trash2 size={16}/> }><form action={deletePost.bind(null,post.id)} className="cms-modal-form"><p>Esta ação elimina a notícia de forma permanente.</p><button className="cms-danger">Remover notícia</button></form></CmsModal></div></div>)}</div></AdminLayout>}
+import { requireCmsUser } from "../auth";
+import { PostsManager, PostRowData } from "./PostsManager";
+
+export const dynamic = "force-dynamic";
+
+export default async function PostsPage() {
+  const user = await requireCmsUser();
+  const db = await getDb();
+
+  const [rows, allCategories] = await Promise.all([
+    db
+      .select({
+        id: posts.id,
+        slug: posts.slug,
+        title: posts.title,
+        excerpt: posts.excerpt,
+        content: posts.content,
+        categoryId: posts.categoryId,
+        categoryName: categories.name,
+        authorName: posts.authorName,
+        featuredImageUrl: posts.featuredImageUrl,
+        featuredImageAlt: posts.featuredImageAlt,
+        status: posts.status,
+        art: posts.art,
+        readingMinutes: posts.readingMinutes,
+        publishedAt: posts.publishedAt,
+        createdAt: posts.createdAt,
+        updatedAt: posts.updatedAt,
+      })
+      .from(posts)
+      .leftJoin(categories, eq(posts.categoryId, categories.id))
+      .orderBy(desc(posts.updatedAt)),
+    db.select({ id: categories.id, name: categories.name }).from(categories),
+  ]);
+
+  return (
+    <AdminLayout userName={user.displayName} role={user.role} active="/admin/posts">
+      <PostsManager
+        initialPosts={rows as PostRowData[]}
+        categories={allCategories}
+        userDisplayName={user.displayName}
+      />
+    </AdminLayout>
+  );
+}

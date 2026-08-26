@@ -1,6 +1,38 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { LogIn } from "lucide-react";
-import { chatGPTSignInPath, getChatGPTUser } from "../../chatgpt-auth";
+import { getCmsSession } from "../auth";
+import { LoginForm } from "./LoginForm";
+
 export const dynamic = "force-dynamic";
-export default async function CmsLogin(){if(await getChatGPTUser())redirect("/admin");return <main className="cms-login"><section><Image src="/brand/grupo-jc-black.svg" alt="Grupo JC" width={180} height={46} priority/><span>CONTENT MANAGER</span><h1>Gestão de conteúdo,<br/>com clareza.</h1><p>Aceda à área segura para gerir notícias, tags e equipa editorial.</p><a href={chatGPTSignInPath("/admin")}><LogIn size={18}/>Entrar no CMS</a></section></main>}
+
+export default async function CmsLoginPage() {
+  const user = await getCmsSession();
+  if (user) {
+    redirect("/admin");
+  }
+
+  return (
+    <main className="cms-login-page">
+      <div className="cms-login-card">
+        <header className="cms-login-header">
+          <Image
+            src="/brand/grupo-jc-black.svg"
+            alt="Grupo JC"
+            width={160}
+            height={40}
+            priority
+          />
+          <span className="cms-login-badge">CONTENT MANAGER</span>
+          <h1>Acesso Administrativo</h1>
+          <p>Introduza as suas credenciais para gerir o portal e conteúdos.</p>
+        </header>
+
+        <LoginForm />
+
+        <footer className="cms-login-footer">
+          <small>Grupo JC &copy; {new Date().getFullYear()} &bull; Área Segura</small>
+        </footer>
+      </div>
+    </main>
+  );
+}

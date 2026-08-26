@@ -39,7 +39,7 @@ export const posts = sqliteTable(
       onDelete: "set null",
     }),
     authorName: text("author_name"),
-    status: text("status", { enum: ["draft", "published", "archived"] })
+    status: text("status", { enum: ["draft", "published", "scheduled", "archived"] })
       .notNull()
       .default("draft"),
     readingMinutes: integer("reading_minutes").notNull().default(1),
@@ -70,6 +70,8 @@ export const cmsProfiles = sqliteTable("cms_profiles", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
+  passwordHash: text("password_hash"),
+  passwordSalt: text("password_salt"),
   role: text("role", { enum: ["admin", "editor"] }).notNull().default("editor"),
   status: text("status", { enum: ["active", "inactive"] }).notNull().default("active"),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),

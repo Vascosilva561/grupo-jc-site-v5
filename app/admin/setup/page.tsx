@@ -1,0 +1,5 @@
+import Image from "next/image";
+import { bootstrapAdminAction } from "../auth";
+import { PasswordField } from "../components/PasswordField";
+export const dynamic = "force-dynamic";
+export default function SetupPage(){return <main className="cms-login-page"><div className="cms-login-card"><header className="cms-login-header"><Image src="/brand/grupo-jc-black.svg" alt="Grupo JC" width={160} height={40} priority/><span className="cms-login-badge">CONFIGURAÇÃO ÚNICA</span><h1>Criar administrador</h1><p>Esta página só funciona enquanto ainda não existir uma conta no CMS.</p></header><form action={bootstrapAdminAction} className="cms-modal-form"><label>Nome completo<input name="name" required/></label><label>E-mail<input name="email" type="email" required/></label><label>Palavra-passe<PasswordField required placeholder="Pelo menos 12 caracteres"/></label><label>Código de configuração<input name="setupToken" type="password" required/></label><button className="cms-login-submit">Criar acesso seguro</button></form></div></main>}
