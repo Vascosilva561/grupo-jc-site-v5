@@ -449,6 +449,7 @@ a:hover svg.arrow-right, button:hover svg.arrow-right { transform: translateX(3p
 
 .area-directory { padding-block: 30px 150px; }
 .area-directory > article { scroll-margin-top: 50px; display: grid; grid-template-columns: 157px 1fr; gap: 45px; padding-block: 120px; border-bottom: 1px solid var(--line); }
+.area-directory > article:last-child { border-bottom: 0; }
 .area-directory-meta { display: flex; flex-direction: column; justify-content: space-between; color: var(--muted); font-size: 10px; }
 .area-directory-meta > div { display: flex; flex-direction: column; gap: 7px; text-transform: uppercase; letter-spacing: .08em; }
 .area-directory-body h2 { max-width: 900px; margin: 0; font: 500 clamp(50px, 6.5vw, 92px)/.98 var(--display); letter-spacing: -.06em; }
