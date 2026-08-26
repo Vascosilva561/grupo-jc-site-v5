@@ -4,7 +4,7 @@ import { desc, eq, asc } from "drizzle-orm";
 import { ArrowUpRight } from "../components/ArrowUpRight";
 import { PageHero } from "../components/PageHero";
 import { SiteFooter } from "../components/SiteFooter";
-import { getDb } from "../../db";
+import { getDb, publishScheduledPosts } from "../../db";
 import { categories, posts } from "../../db/schema";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +21,7 @@ type Props = {
 
 export default async function NewsPage({ searchParams }: Props) {
   const { categoria: selectedCategorySlug } = await searchParams;
+  await publishScheduledPosts();
   const db = await getDb();
 
   const [allCategories, allPosts] = await Promise.all([

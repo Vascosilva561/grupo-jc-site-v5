@@ -17,6 +17,7 @@ export function BannerUpload({
   altName = "featuredImageAlt",
 }: BannerUploadProps) {
   const [imageUrl, setImageUrl] = useState<string>(initialUrl || "");
+  const [hasLocalFile, setHasLocalFile] = useState(false);
   const [altText, setAltText] = useState<string>(initialAlt || "");
   const [isUrlMode, setIsUrlMode] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -43,6 +44,7 @@ export function BannerUpload({
     reader.onload = (e) => {
       const result = e.target?.result as string;
       setImageUrl(result);
+      setHasLocalFile(true);
     };
     reader.readAsDataURL(file);
   };
@@ -57,6 +59,7 @@ export function BannerUpload({
 
   const handleRemove = () => {
     setImageUrl("");
+    setHasLocalFile(false);
     setAltText("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -65,7 +68,7 @@ export function BannerUpload({
 
   return (
     <div className="cms-banner-upload">
-      <input type="hidden" name={name} value={imageUrl} />
+      <input type="hidden" name={name} value={hasLocalFile ? "" : imageUrl} />
 
       <div className="cms-banner-upload__header">
         <label className="cms-field-label">
@@ -140,6 +143,7 @@ export function BannerUpload({
             <LinkIcon size={16} className="cms-input-icon" />
             <input
               type="url"
+              name={name}
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               placeholder="https://exemplo.com/imagem-destaque.jpg"
@@ -180,6 +184,7 @@ export function BannerUpload({
       <input
         ref={fileInputRef}
         type="file"
+        name="featuredImageFile"
         accept="image/png,image/jpeg,image/webp,image/svg+xml"
         style={{ display: "none" }}
         onChange={(e) => handleFileChange(e.target.files?.[0] || null)}

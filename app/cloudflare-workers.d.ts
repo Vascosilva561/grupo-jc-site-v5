@@ -1,6 +1,7 @@
 declare module "cloudflare:workers" {
   export const env: {
     DB?: any;
+    MEDIA?: any;
     [key: string]: any;
   };
 }

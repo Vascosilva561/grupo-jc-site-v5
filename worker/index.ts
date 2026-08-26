@@ -12,6 +12,7 @@ interface Env {
       };
     };
   };
+  MEDIA?: any;
 }
 
 interface ExecutionContext {
@@ -26,8 +27,27 @@ interface ExecutionContext {
 // const imageConfig: ImageConfig = { dangerouslyAllowSVG: true };
 
 const worker = {
+  async scheduled(_controller: ScheduledController, env: Env, _ctx: ExecutionContext): Promise<void> {
+    const now = new Date().toISOString();
+    await env.DB.prepare(
+      "UPDATE posts SET status = 'published', updated_at = ? WHERE status = 'scheduled' AND published_at IS NOT NULL AND published_at <= ?",
+    ).bind(now, now).run();
+  },
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname.startsWith("/media/") && env.MEDIA) {
+      const key = decodeURIComponent(url.pathname.slice("/media/".length));
+      const object = await env.MEDIA.get(key);
+      if (!object) return new Response("Not found", { status: 404 });
+      return new Response(object.body, {
+        headers: {
+          "Content-Type": object.httpMetadata?.contentType || "application/octet-stream",
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "X-Content-Type-Options": "nosniff",
+        },
+      });
+    }
 
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];

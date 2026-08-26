@@ -5,7 +5,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { ArrowLeft, ArrowUpRight } from "../../components/ArrowUpRight";
 import { SiteFooter } from "../../components/SiteFooter";
 import { SiteHeader } from "../../components/SiteHeader";
-import { getDb } from "../../../db";
+import { getDb, publishScheduledPosts } from "../../../db";
 import { categories, posts } from "../../../db/schema";
 import { MarkdownContent } from "../MarkdownContent";
 
@@ -29,6 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function NewsArticlePage({ params }: Props) {
   const { slug } = await params;
+  await publishScheduledPosts();
   const db = await getDb();
 
   const [article, allPublished] = await Promise.all([

@@ -19,11 +19,11 @@ export function AdminLayout({
   const navigation: NavItem[] = [
     ["Visão geral", "/admin", LayoutDashboard],
     ["Posts", "/admin/posts", FileText],
-    ["Tags", "/admin/tags", Tags],
   ];
 
-  // Perfis is strictly restricted to Administrador
+  // Taxonomy and profiles are strictly restricted to Administrador.
   if (role === "admin") {
+    navigation.push(["Tags", "/admin/tags", Tags]);
     navigation.push(["Perfis", "/admin/profiles", Users]);
   }
 

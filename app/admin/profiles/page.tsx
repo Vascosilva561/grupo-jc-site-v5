@@ -1,4 +1,4 @@
-import { Edit3, Plus, UserMinus } from "lucide-react";
+import { Edit3, Plus, Trash2, UserMinus } from "lucide-react";
 import { asc } from "drizzle-orm";
 import { getDb } from "../../../db";
 import { cmsProfiles } from "../../../db/schema";
@@ -6,8 +6,9 @@ import { AdminLayout } from "../AdminLayout";
 import { requireCmsAdmin } from "../auth";
 import { CmsModal } from "../components/CmsModal";
 import { CmsSelect } from "../components/CmsSelect";
+import { DeleteConfirmModal } from "../components/DeleteConfirmModal";
 import { PasswordField } from "../components/PasswordField";
-import { createProfile, toggleProfile, updateProfile } from "../taxonomy-actions";
+import { createProfile, deleteProfile, toggleProfile, updateProfile } from "../taxonomy-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -160,6 +161,13 @@ export default async function ProfilesPage() {
                     <UserMinus size={16} />
                   </button>
                 </form>
+                <DeleteConfirmModal
+                  title="Eliminar perfil"
+                  description={<>Esta ação elimina o perfil <strong>"{profile.name}"</strong> permanentemente. A conta não poderá ser recuperada.</>}
+                  buttonLabel="Eliminar perfil"
+                  action={deleteProfile.bind(null, profile.id)}
+                  trigger={<Trash2 size={16} />}
+                />
               </div>
             </div>
           </div>

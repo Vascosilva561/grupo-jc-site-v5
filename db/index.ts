@@ -20,6 +20,15 @@ export async function getDb() {
   return drizzle(env.DB, { schema });
 }
 
+/** Publishes scheduled articles whose publication time has arrived. */
+export async function publishScheduledPosts() {
+  if (!env.DB) return;
+  const now = new Date().toISOString();
+  await env.DB.prepare(
+    "UPDATE posts SET status = 'published', updated_at = ? WHERE status = 'scheduled' AND published_at IS NOT NULL AND published_at <= ?",
+  ).bind(now, now).run();
+}
+
 async function initializeDevelopmentDatabase() {
   await env.DB.batch([
     env.DB.prepare("CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT NOT NULL UNIQUE, slug TEXT NOT NULL UNIQUE, description TEXT, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"),
