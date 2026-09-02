@@ -12,6 +12,7 @@ export function LazySpline() {
   const [isNearViewport, setIsNearViewport] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isViewerReady, setIsViewerReady] = useState(false);
+  const [hasFailed, setHasFailed] = useState(false);
   const [mountId] = useState(() => Date.now());
 
   useEffect(() => {
@@ -57,6 +58,7 @@ export function LazySpline() {
     const onLoad = () => {
       void customElements.whenDefined("spline-viewer").then(() => setIsViewerReady(true));
     };
+    const onError = () => setHasFailed(true);
 
     if (!script) {
       script = document.createElement("script");
@@ -64,13 +66,45 @@ export function LazySpline() {
       script.type = "module";
       script.src = splineScriptUrl;
       script.addEventListener("load", onLoad, { once: true });
+      script.addEventListener("error", onError, { once: true });
       document.head.appendChild(script);
-      return () => script?.removeEventListener("load", onLoad);
+      return () => {
+        script?.removeEventListener("load", onLoad);
+        script?.removeEventListener("error", onError);
+      };
     }
 
     script.addEventListener("load", onLoad, { once: true });
-    return () => script?.removeEventListener("load", onLoad);
+    script.addEventListener("error", onError, { once: true });
+    return () => {
+      script?.removeEventListener("load", onLoad);
+      script?.removeEventListener("error", onError);
+    };
   }, [isNearViewport, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (!isViewerReady || prefersReducedMotion || hasFailed) return;
+
+    const viewer = viewerRef.current;
+    if (!viewer) return;
+
+    const handleLoadComplete = () => setHasFailed(false);
+    const handleLoadError = () => setHasFailed(true);
+    viewer.addEventListener("load-complete", handleLoadComplete);
+    viewer.addEventListener("error", handleLoadError);
+    viewer.addEventListener("context-loss", handleLoadError);
+
+    // Some mobile WebGL implementations fail silently. Never leave a blank
+    // canvas covering the section when the scene cannot be rendered.
+    const timeout = window.setTimeout(() => setHasFailed(true), 12000);
+
+    return () => {
+      window.clearTimeout(timeout);
+      viewer.removeEventListener("load-complete", handleLoadComplete);
+      viewer.removeEventListener("error", handleLoadError);
+      viewer.removeEventListener("context-loss", handleLoadError);
+    };
+  }, [isViewerReady, prefersReducedMotion, hasFailed]);
 
   useEffect(() => {
     const viewerEl = viewerRef.current;
@@ -102,13 +136,17 @@ export function LazySpline() {
   return (
     <div ref={containerRef} className="home-v2-story__spline" aria-hidden="true">
       <div className="home-v2-story__spline-fallback" />
-      {isViewerReady && !prefersReducedMotion && (
+      {isViewerReady && !prefersReducedMotion && !hasFailed && (
         <spline-viewer
           key={mountId}
           ref={(node) => {
             viewerRef.current = node;
           }}
           url={sceneUrl}
+          loading="eager"
+          loading-anim
+          loading-anim-type="spinner-big-light"
+          background="#111827"
         />
       )}
     </div>

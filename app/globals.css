@@ -1173,7 +1173,12 @@ a:hover svg.arrow-right, button:hover svg.arrow-right { transform: translateX(3p
 .home-v2-company-card p { max-width: 600px; margin: 0; color: #111827; font-size: 14px; line-height: 1.4; }
 .home-v2-story { position: relative; isolation: isolate; overflow: hidden; background: #111827; }
 .home-v2-story__spline { position: absolute; inset: 0; z-index: 0; opacity: .72; pointer-events: none; }
-.home-v2-story__spline-fallback { position: absolute; inset: 0; background: radial-gradient(circle at 75% 30%, rgba(97,180,251,.22), transparent 30%), radial-gradient(circle at 20% 75%, rgba(185,220,255,.12), transparent 25%), #111827; }
+.home-v2-story__spline-fallback { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(circle at 75% 30%, rgba(97,180,251,.32), transparent 30%), radial-gradient(circle at 20% 75%, rgba(185,220,255,.18), transparent 25%), #111827; }
+.home-v2-story__spline-fallback::before { position: absolute; inset: -18%; border-radius: 50%; background: radial-gradient(circle, rgba(59,163,255,.16), transparent 58%); content: ""; animation: home-v2-spline-fallback-pulse 8s ease-in-out infinite alternate; }
+.home-v2-story__spline-fallback::after { position: absolute; inset: 0; background: linear-gradient(125deg, transparent 34%, rgba(185,220,255,.08) 50%, transparent 66%); content: ""; animation: home-v2-spline-fallback-shimmer 10s linear infinite; }
+@keyframes home-v2-spline-fallback-pulse { from { transform: scale(.9) translate3d(-4%, 2%, 0); opacity: .55; } to { transform: scale(1.1) translate3d(5%, -3%, 0); opacity: 1; } }
+@keyframes home-v2-spline-fallback-shimmer { from { transform: translateX(-35%); } to { transform: translateX(35%); } }
+@media (prefers-reduced-motion: reduce) { .home-v2-story__spline-fallback::before, .home-v2-story__spline-fallback::after { animation: none; } }
 .home-v2-story__spline::after { content: ""; position: absolute; inset: 0; background: rgba(17,24,39,.18); }
 .home-v2-story__spline spline-viewer, .home-v2-story__spline iframe { position: relative; z-index: 1; display: block; width: 100%; height: 100%; border: none; }
 .home-v2-areas { position: relative; z-index: 1; padding: 120px 0 120px; background: transparent; color: white; }
