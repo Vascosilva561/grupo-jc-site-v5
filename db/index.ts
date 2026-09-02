@@ -6,7 +6,9 @@ let database: ReturnType<typeof drizzle<typeof schema>> | undefined;
 
 export async function getDb() {
   if (database) return database;
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString = process.env.DATABASE_URL
+    ?.trim()
+    .replace(/^(\"|')(.*)\1$/, "$2");
   if (!connectionString) throw new Error("DATABASE_URL não está configurada.");
   database = drizzle(neon(connectionString), { schema });
   return database;
