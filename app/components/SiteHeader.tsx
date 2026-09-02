@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowRight } from "./ArrowUpRight";
+import { ArrowRight, ArrowUpRight } from "./ArrowUpRight";
 import { LanguageSelector } from "./LanguageSelector";
 import { useLanguage } from "../translations";
 
@@ -91,7 +91,10 @@ export function SiteHeader({ dark = false, transparentOnTop = false }: { dark?: 
             <nav id="mobile-navigation" aria-label="Navegação móvel">
               <p>{t.header.explore}</p>
               {menuItems.map((item) => (
-                <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className={pathname === item.href ? "is-active" : ""} aria-current={pathname === item.href ? "page" : undefined}>{item.label}</Link>
+                <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className={pathname === item.href ? "is-active" : ""} aria-current={pathname === item.href ? "page" : undefined}>
+                  {item.label}
+                  <ArrowUpRight size={18} />
+                </Link>
               ))}
               <Link href="/contactos" className="mobile-menu__contact" onClick={() => setIsMenuOpen(false)}>
                 {t.header.contactUs} <ArrowRight size={18} />
