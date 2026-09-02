@@ -6,9 +6,20 @@ const splineScriptId = "spline-viewer-script";
 const splineScriptUrl = "https://unpkg.com/@splinetool/viewer@1.12.98/build/spline-viewer.js";
 const sceneUrl = "https://prod.spline.design/NstUGB7T86MqYMi7/scene.splinecode";
 
+type SplineViewerElement = HTMLElement & {
+  app?: { dispose?: () => void };
+  spline?: { dispose?: () => void };
+  _spline?: { dispose?: () => void };
+};
+
+function disposeSplineViewer(viewer: SplineViewerElement | null) {
+  const runtime = viewer?.spline ?? viewer?._spline ?? viewer?.app;
+  runtime?.dispose?.();
+}
+
 export function LazySpline() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const viewerRef = useRef<HTMLElement | null>(null);
+  const viewerRef = useRef<SplineViewerElement | null>(null);
   const [isNearViewport, setIsNearViewport] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isAndroid] = useState(() =>
@@ -140,6 +151,14 @@ export function LazySpline() {
       if (retryTimerRef.current !== null) {
         window.clearTimeout(retryTimerRef.current);
       }
+
+      // The custom element owns its render loop and WebGL resources. On a
+      // client-side route change React removes the element, but the viewer
+      // runtime can otherwise keep working in the background. Dispose only
+      // the viewer runtime (never force WebGL context loss) so returning to
+      // Home starts a fresh, fluid scene without degrading the next mount.
+      disposeSplineViewer(viewerRef.current);
+      viewerRef.current = null;
     };
   }, []);
 
@@ -150,7 +169,15 @@ export function LazySpline() {
         <spline-viewer
           key={`${mountId}-${renderAttempt}`}
           ref={(node) => {
-            viewerRef.current = node;
+            if (!node) {
+              // React invokes the callback with null whenever the viewer is
+              // removed after a failed mount or a context-loss recovery.
+              disposeSplineViewer(viewerRef.current);
+              viewerRef.current = null;
+              return;
+            }
+
+            viewerRef.current = node as SplineViewerElement;
             if (node) {
               // Keep the critical Viewer options as attributes as well as JSX
               // properties; this is more reliable in mobile custom-element
