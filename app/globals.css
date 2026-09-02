@@ -15,6 +15,10 @@
   --space-section: 120px;
   --space-section-mobile: 80px;
   --heading-size: clamp(42px, 4.5vw, 56px);
+  --tracking-title: -0.055em;
+  --tracking-section: -0.05em;
+  --tracking-card: -0.035em;
+  --tracking-lead: -0.02em;
   --body-size: 16px;
   --body-leading: 1.45;
   --button-height: 64px;
@@ -2833,4 +2837,92 @@ textarea:focus::placeholder {
   .company-v2-highlights, .company-v2-audiences, .company-v2-services__grid { grid-template-columns: 1fr; gap: 16px; }
   .company-v2-highlights article, .company-v2-audiences article, .company-v2-services__grid article { min-height: 0; padding: 24px; }
   .company-v2-relation__footer { align-items: flex-start; flex-direction: column; }
+}
+
+/* Public editorial type scale: keep tracking proportional as headings resize. */
+.home-v2-hero h1,
+.hero-copy h1,
+.page-hero h1,
+.page-hero-wrap--centered .page-hero h1,
+.empresas-hero h1,
+.pagaso-hero h1,
+.company-detail-copy h1,
+.areas-hero h1,
+.application-intro h1,
+.news-article-header h1,
+.sobre-hero-title {
+  letter-spacing: var(--tracking-title);
+}
+
+.home-v2-intro__copy h2,
+.home-v2-section-title h2,
+.home-v2-areas h2,
+.home-v2-vision h2,
+.home-v2-impact h2,
+.home-v2-careers h2,
+.intro-content h2,
+.section-heading h2,
+.vision-content h2,
+.content-main h2,
+.purpose-intro h2,
+.leadership-note h2,
+.pagaso-intro__content h2,
+.pagaso-value h2,
+.pagaso-relation h2,
+.pagaso-services h2,
+.company-v2-intro h2,
+.company-v2-value h2,
+.company-v2-services h2,
+.company-v2-relation h2,
+.area-directory-body h2,
+.impact-manifesto__copy h2,
+.impact-stack-heading h2,
+.young-talent h2,
+.application-cta h2,
+.contact-intro h2,
+.news-index__heading h2,
+.news-next h2,
+.sobre-history-copy h2,
+.sobre-purpose-main h2,
+.sobre-values-head h2,
+.sobre-leadership-banner h2,
+.sobre-leadership-content h2,
+.company-exclusive-card h2,
+.company-editorial-title,
+.news-article-body__content h2,
+.news-article-markdown h2 {
+  letter-spacing: var(--tracking-section);
+}
+
+.home-v2-company-card h3,
+.home-v2-area h3,
+.home-v2-impact h3,
+.company-card h3,
+.area-card h3,
+.news-card h3,
+.benefit-grid h3,
+.sobre-values-grid article h3,
+.company-v2-highlights h3,
+.company-v2-audiences h3,
+.company-v2-services__grid h3,
+.pagaso-highlights h3,
+.pagaso-audiences h3,
+.company-highlight-card h3,
+.company-audience-card h3,
+.company-ecosystem-card h3,
+.news-story-card h2,
+.directory-card h2,
+.simple-card h3,
+.news-article-markdown h3,
+.leadership-modal-content h3 {
+  letter-spacing: var(--tracking-card);
+}
+
+.prose-large,
+.intro-content blockquote,
+.sobre-history-lead,
+.sobre-purpose-article p,
+.news-article-lead,
+.news-article-markdown blockquote {
+  letter-spacing: var(--tracking-lead);
 }
