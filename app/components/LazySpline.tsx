@@ -11,6 +11,9 @@ export function LazySpline() {
   const viewerRef = useRef<HTMLElement | null>(null);
   const [isNearViewport, setIsNearViewport] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [isAndroid] = useState(() =>
+    typeof navigator !== "undefined" && /Android/i.test(navigator.userAgent),
+  );
   const [isViewerReady, setIsViewerReady] = useState(false);
   const [hasFailed, setHasFailed] = useState(false);
   const [renderAttempt, setRenderAttempt] = useState(0);
@@ -29,7 +32,7 @@ export function LazySpline() {
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || prefersReducedMotion) return;
+    if (!container || prefersReducedMotion || isAndroid) return;
 
     if (!("IntersectionObserver" in window)) {
       setIsNearViewport(true);
@@ -47,10 +50,10 @@ export function LazySpline() {
 
     observer.observe(container);
     return () => observer.disconnect();
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, isAndroid]);
 
   useEffect(() => {
-    if (!isNearViewport || prefersReducedMotion) return;
+    if (!isNearViewport || prefersReducedMotion || isAndroid) return;
 
     if (customElements.get("spline-viewer")) {
       setIsViewerReady(true);
@@ -83,10 +86,10 @@ export function LazySpline() {
       script?.removeEventListener("load", onLoad);
       script?.removeEventListener("error", onError);
     };
-  }, [isNearViewport, prefersReducedMotion]);
+  }, [isNearViewport, prefersReducedMotion, isAndroid]);
 
   useEffect(() => {
-    if (!isViewerReady || prefersReducedMotion || hasFailed) return;
+    if (!isViewerReady || prefersReducedMotion || isAndroid || hasFailed) return;
 
     const viewer = viewerRef.current;
     if (!viewer) return;
@@ -130,7 +133,7 @@ export function LazySpline() {
       viewer.removeEventListener("load-complete", handleLoadComplete);
       viewer.removeEventListener("context-loss", handleContextLoss);
     };
-  }, [isViewerReady, prefersReducedMotion, hasFailed]);
+  }, [isViewerReady, prefersReducedMotion, isAndroid, hasFailed]);
 
   useEffect(() => {
     return () => {
@@ -143,7 +146,7 @@ export function LazySpline() {
   return (
     <div ref={containerRef} className="home-v2-story__spline" aria-hidden="true">
       <div className="home-v2-story__spline-fallback" />
-      {isViewerReady && !prefersReducedMotion && !hasFailed && (
+      {isViewerReady && !prefersReducedMotion && !isAndroid && !hasFailed && (
         <spline-viewer
           key={`${mountId}-${renderAttempt}`}
           ref={(node) => {
