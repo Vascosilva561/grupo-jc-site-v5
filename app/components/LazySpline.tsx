@@ -13,6 +13,9 @@ export function LazySpline() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isViewerReady, setIsViewerReady] = useState(false);
   const [hasFailed, setHasFailed] = useState(false);
+  const [renderAttempt, setRenderAttempt] = useState(0);
+  const retryCountRef = useRef(0);
+  const retryTimerRef = useRef<number | null>(null);
   const [mountId] = useState(() => Date.now());
 
   useEffect(() => {
@@ -88,9 +91,26 @@ export function LazySpline() {
     const viewer = viewerRef.current;
     if (!viewer) return;
 
-    const handleLoadComplete = () => setHasFailed(false);
+    const handleLoadComplete = () => {
+      retryCountRef.current = 0;
+      setHasFailed(false);
+    };
     viewer.addEventListener("load-complete", handleLoadComplete);
-    const handleContextLoss = () => setHasFailed(true);
+    const handleContextLoss = () => {
+      // Mobile GPUs can lose WebGL context once while the scene is starting.
+      // Remount once so the animation can recover without a full page reload.
+      if (retryCountRef.current >= 1) {
+        setHasFailed(true);
+        return;
+      }
+
+      retryCountRef.current += 1;
+      setHasFailed(true);
+      retryTimerRef.current = window.setTimeout(() => {
+        setHasFailed(false);
+        setRenderAttempt((attempt) => attempt + 1);
+      }, 700);
+    };
     viewer.addEventListener("context-loss", handleContextLoss);
 
     // Some mobile WebGL implementations fail silently. Never leave a blank
@@ -105,40 +125,31 @@ export function LazySpline() {
   }, [isViewerReady, prefersReducedMotion, hasFailed]);
 
   useEffect(() => {
-    const viewerEl = viewerRef.current;
-    if (!viewerEl) return;
-
     return () => {
-      try {
-        const splineApp = (viewerEl as any).spline || (viewerEl as any)._spline || (viewerEl as any).app;
-        if (splineApp && typeof splineApp.dispose === "function") {
-          splineApp.dispose();
-        }
-
-        const shadowRoot = viewerEl.shadowRoot;
-        if (shadowRoot) {
-          const canvas = shadowRoot.querySelector("canvas");
-          if (canvas) {
-            const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
-            if (gl) {
-              gl.getExtension("WEBGL_lose_context")?.loseContext();
-            }
-          }
-        }
-      } catch (err) {
-        // ignore cleanup errors
+      if (retryTimerRef.current !== null) {
+        window.clearTimeout(retryTimerRef.current);
       }
     };
-  }, [isViewerReady]);
+  }, []);
 
   return (
     <div ref={containerRef} className="home-v2-story__spline" aria-hidden="true">
       <div className="home-v2-story__spline-fallback" />
       {isViewerReady && !prefersReducedMotion && !hasFailed && (
         <spline-viewer
-          key={mountId}
+          key={`${mountId}-${renderAttempt}`}
           ref={(node) => {
             viewerRef.current = node;
+            if (node) {
+              // Keep the critical Viewer options as attributes as well as JSX
+              // properties; this is more reliable in mobile custom-element
+              // implementations that upgrade after React hydrates.
+              node.setAttribute("url", sceneUrl);
+              node.setAttribute("loading", "eager");
+              node.setAttribute("loading-anim", "");
+              node.setAttribute("loading-anim-type", "spinner-big-light");
+              node.setAttribute("background", "transparent");
+            }
           }}
           url={sceneUrl}
           loading="eager"
