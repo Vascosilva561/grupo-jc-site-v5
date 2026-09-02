@@ -3,14 +3,24 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { navigation } from "../data";
 import { ArrowRight } from "./ArrowUpRight";
+import { LanguageSelector } from "./LanguageSelector";
+import { useLanguage } from "../translations";
 
 export function SiteHeader({ dark = false, transparentOnTop = false }: { dark?: boolean; transparentOnTop?: boolean }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const menuItems = [{ label: "Início", href: "/" }, ...navigation];
+
+  const menuItems = [
+    { label: t.header.home, href: "/" },
+    { label: t.header.about, href: "/grupo" },
+    { label: t.header.companies, href: "/empresas" },
+    { label: t.header.areas, href: "/areas" },
+    { label: t.header.impact, href: "/impacto" },
+    { label: t.header.news, href: "/noticias" },
+  ];
 
   useEffect(() => {
     if (!transparentOnTop) return;
@@ -52,7 +62,7 @@ export function SiteHeader({ dark = false, transparentOnTop = false }: { dark?: 
     <>
       <header className={`site-header ${dark ? "site-header--dark" : ""} ${isTransparent ? "site-header--transparent" : ""} ${isMenuOpen ? "site-header--mobile-open" : ""}`}>
       <div className="shell header-inner">
-        <Link href="/" className="brand-link" aria-label="Grupo JC — Início">
+        <Link href="/" className="brand-link" aria-label={`Grupo JC — ${t.header.home}`}>
           <img src={dark && !isMenuOpen ? "/brand/grupo-jc-white.svg" : "/brand/grupo-jc-black.svg"} alt="Grupo JC" />
         </Link>
         <nav className="desktop-nav" aria-label="Navegação principal">
@@ -60,29 +70,34 @@ export function SiteHeader({ dark = false, transparentOnTop = false }: { dark?: 
             <Link key={item.href} href={item.href} className={pathname === item.href ? "is-active" : ""} aria-current={pathname === item.href ? "page" : undefined}>{item.label}</Link>
           ))}
         </nav>
-        <Link href="/contactos" className="header-cta">
-          Fale Connosco <ArrowRight size={16} />
-        </Link>
-        <div className={`mobile-menu ${isMenuOpen ? "is-open" : ""}`}>
-          <button
-            type="button"
-            className="mobile-menu__toggle"
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-navigation"
-            aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
-            onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
-          >
-            <span /><span />
-          </button>
-          <nav id="mobile-navigation" aria-label="Navegação móvel">
-            <p>Explorar</p>
-            {menuItems.map((item) => (
-              <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className={pathname === item.href ? "is-active" : ""} aria-current={pathname === item.href ? "page" : undefined}>{item.label}</Link>
-            ))}
-            <Link href="/contactos" className="mobile-menu__contact" onClick={() => setIsMenuOpen(false)}>
-              Fale connosco <ArrowRight size={18} />
+        <div className="header-right">
+          <div className="header-actions">
+            <LanguageSelector dark={dark && !isMenuOpen} />
+            <Link href="/contactos" className="header-cta">
+              {t.header.contactUs} <ArrowRight size={16} />
             </Link>
-          </nav>
+          </div>
+          <div className={`mobile-menu ${isMenuOpen ? "is-open" : ""}`}>
+            <button
+              type="button"
+              className="mobile-menu__toggle"
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-navigation"
+              aria-label={isMenuOpen ? t.header.closeMenu : t.header.openMenu}
+              onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
+            >
+              <span /><span />
+            </button>
+            <nav id="mobile-navigation" aria-label="Navegação móvel">
+              <p>{t.header.explore}</p>
+              {menuItems.map((item) => (
+                <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className={pathname === item.href ? "is-active" : ""} aria-current={pathname === item.href ? "page" : undefined}>{item.label}</Link>
+              ))}
+              <Link href="/contactos" className="mobile-menu__contact" onClick={() => setIsMenuOpen(false)}>
+                {t.header.contactUs} <ArrowRight size={18} />
+              </Link>
+            </nav>
+          </div>
         </div>
       </div>
       </header>

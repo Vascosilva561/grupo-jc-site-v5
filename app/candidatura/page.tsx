@@ -1,21 +1,29 @@
 import type { Metadata } from "next";
-import { ApplicationForm } from "../components/ApplicationForm";
-import { SiteFooter } from "../components/SiteFooter";
-import { SiteHeader } from "../components/SiteHeader";
+import { ApplicationClient } from "./ApplicationClient";
 
-export const metadata: Metadata = { title: "Candidatura espontânea" };
+export const metadata: Metadata = {
+  title: "Carreiras e Candidatura | Grupo JC",
+  description:
+    "Junte-se à nossa equipa. Submeta a sua candidatura espontânea e faça parte do futuro da tecnologia, finanças e retalho digital em Angola.",
+  alternates: {
+    canonical: "/candidatura",
+  },
+  openGraph: {
+    title: "Carreiras e Oportunidades | Grupo JC",
+    description:
+      "Junte-se à nossa equipa. Submeta a sua candidatura espontânea e faça parte do futuro da tecnologia, finanças e retalho digital em Angola.",
+    url: "/candidatura",
+    images: [
+      {
+        url: "/brand/grupo-jc-black.svg",
+        width: 1200,
+        height: 630,
+        alt: "Carreiras no Grupo JC",
+      },
+    ],
+  },
+};
 
 export default function ApplicationPage() {
-  return <main className="application-page">
-    <SiteHeader />
-    <section className="application-layout shell">
-      <div className="application-intro">
-        <span className="eyebrow">Candidatura espontânea</span>
-        <h1>Mostre-nos o que pode construir connosco.</h1>
-        <p>Envie o seu currículo e partilhe a área onde acredita poder criar mais impacto. Guardaremos o seu perfil para futuras oportunidades no Grupo JC.</p>
-      </div>
-      <ApplicationForm />
-    </section>
-    <SiteFooter />
-  </main>;
+  return <ApplicationClient />;
 }

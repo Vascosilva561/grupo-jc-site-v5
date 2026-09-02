@@ -24,7 +24,7 @@ export async function createCategory(data: FormData) {
   const db = await getDb();
   const slug = slugify(name);
   if (!slug) throw new Error("O nome deve conter letras ou números.");
-  if (await db.select({ id: categories.id }).from(categories).where(eq(categories.slug, slug)).get()) throw new Error("Já existe uma categoria com este nome.");
+  if ((await db.select({ id: categories.id }).from(categories).where(eq(categories.slug, slug)).limit(1))[0]) throw new Error("Já existe uma categoria com este nome.");
   await db.insert(categories).values({
     name,
     slug,
@@ -41,7 +41,7 @@ export async function updateCategory(id: number, data: FormData) {
   const db = await getDb();
   const slug = slugify(name);
   if (!slug) throw new Error("O nome deve conter letras ou números.");
-  const duplicate = await db.select({ id: categories.id }).from(categories).where(eq(categories.slug, slug)).get();
+  const [duplicate] = await db.select({ id: categories.id }).from(categories).where(eq(categories.slug, slug)).limit(1);
   if (duplicate && duplicate.id !== id) throw new Error("Já existe uma categoria com este nome.");
   await db
     .update(categories)
@@ -72,7 +72,7 @@ export async function createProfile(data: FormData) {
 
   const { hash, salt } = await hashPassword(password);
   const db = await getDb();
-  if (await db.select({ id: cmsProfiles.id }).from(cmsProfiles).where(eq(cmsProfiles.email, email)).get()) throw new Error("Já existe um perfil com este e-mail.");
+  if ((await db.select({ id: cmsProfiles.id }).from(cmsProfiles).where(eq(cmsProfiles.email, email)).limit(1))[0]) throw new Error("Já existe um perfil com este e-mail.");
   await db.insert(cmsProfiles).values({
     name,
     email,
@@ -87,10 +87,10 @@ export async function createProfile(data: FormData) {
 export async function toggleProfile(id: number, status: "active" | "inactive") {
   const actor = await requireCmsAdmin();
   const db = await getDb();
-  const target = await db.select({ id: cmsProfiles.id, role: cmsProfiles.role, status: cmsProfiles.status }).from(cmsProfiles).where(eq(cmsProfiles.id, id)).get();
+  const [target] = await db.select({ id: cmsProfiles.id, role: cmsProfiles.role, status: cmsProfiles.status }).from(cmsProfiles).where(eq(cmsProfiles.id, id)).limit(1);
   if (!target) throw new Error("Perfil não encontrado.");
   if (status === "inactive" && target.role === "admin" && target.status === "active") {
-    const activeAdmins = await db.select({ id: cmsProfiles.id }).from(cmsProfiles).where(eq(cmsProfiles.role, "admin")).all();
+    const activeAdmins = await db.select({ id: cmsProfiles.id }).from(cmsProfiles).where(eq(cmsProfiles.role, "admin"));
     if (activeAdmins.length <= 1) throw new Error("Não é possível desactivar o último administrador.");
   }
   if (status === "inactive" && actor.id === id) throw new Error("Não pode desactivar a sua própria conta.");
@@ -104,11 +104,11 @@ export async function toggleProfile(id: number, status: "active" | "inactive") {
 export async function deleteProfile(id: number) {
   const actor = await requireCmsAdmin();
   const db = await getDb();
-  const target = await db.select({ id: cmsProfiles.id, role: cmsProfiles.role, status: cmsProfiles.status }).from(cmsProfiles).where(eq(cmsProfiles.id, id)).get();
+  const [target] = await db.select({ id: cmsProfiles.id, role: cmsProfiles.role, status: cmsProfiles.status }).from(cmsProfiles).where(eq(cmsProfiles.id, id)).limit(1);
   if (!target) throw new Error("Perfil não encontrado.");
   if (actor.id === id) throw new Error("Não pode eliminar a sua própria conta.");
   if (target.role === "admin" && target.status === "active") {
-    const admins = await db.select({ id: cmsProfiles.id }).from(cmsProfiles).where(eq(cmsProfiles.role, "admin")).all();
+    const admins = await db.select({ id: cmsProfiles.id }).from(cmsProfiles).where(eq(cmsProfiles.role, "admin"));
     if (admins.length <= 1) throw new Error("Não é possível eliminar o último administrador.");
   }
   await db.delete(cmsProfiles).where(eq(cmsProfiles.id, id));
@@ -123,7 +123,7 @@ export async function updateProfile(id: number, data: FormData) {
   if (!name || !email) throw new Error("Dados obrigatórios");
 
   const db = await getDb();
-  const duplicate = await db.select({ id: cmsProfiles.id }).from(cmsProfiles).where(eq(cmsProfiles.email, email)).get();
+  const [duplicate] = await db.select({ id: cmsProfiles.id }).from(cmsProfiles).where(eq(cmsProfiles.email, email)).limit(1);
   if (duplicate && duplicate.id !== id) throw new Error("Já existe um perfil com este e-mail.");
   const updateData: Record<string, any> = {
     name,

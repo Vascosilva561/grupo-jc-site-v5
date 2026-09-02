@@ -15,9 +15,9 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
   if (!Number.isInteger(id)) notFound();
   const db = await getDb();
   const [post, allCategories] = await Promise.all([
-    db.select().from(posts).where(eq(posts.id, id)).get(),
+    db.select().from(posts).where(eq(posts.id, id)).limit(1).then(([result]) => result),
     db.select({ id: categories.id, name: categories.name }).from(categories).orderBy(asc(categories.name)),
   ]);
   if (!post) notFound();
-  return <main className="admin-shell"><header className="admin-header"><Link className="admin-brand" href="/admin">Grupo JC <span>CMS</span></Link></header><section className="admin-content"><div className="admin-intro"><p className="eyebrow">Editar notícia</p><h1>Actualizar conteúdo.</h1></div><PostForm categories={allCategories} post={{ ...post, categoryId: post.categoryId ?? null }} authorDefault={user.displayName} action={updatePost.bind(null, id)} /><form action={deletePost.bind(null, id)} className="admin-danger"><p>Esta ação elimina permanentemente a notícia.</p><button type="submit">Remover notícia</button></form></section></main>;
+  return <main className="admin-shell"><header className="admin-header"><Link className="admin-brand" href="/admin">Grupo JC <span>CMS</span></Link></header><section className="admin-content"><div className="admin-intro"><p className="eyebrow">Editar notícia</p><h1>Actualizar conteúdo.</h1></div><PostForm categories={allCategories} post={{ ...post, categoryId: post.categoryId ?? null }} authorDefault={user.displayName} action={updatePost.bind(null, id)} /><form action={deletePost.bind(null, id)} className="admin-danger"><p>Esta acção elimina permanentemente a notícia.</p><button type="submit">Remover notícia</button></form></section></main>;
 }

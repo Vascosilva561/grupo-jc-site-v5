@@ -1,24 +1,58 @@
 import type { Metadata } from "next";
-import { SiteFooter } from "../components/SiteFooter";
-import { SiteHeader } from "../components/SiteHeader";
-import { ContactForm } from "../components/ContactForm";
+import { ContactClient } from "./ContactClient";
+import { JsonLd } from "../components/JsonLd";
 
-export const metadata: Metadata = { title: "Contactos" };
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://grupojc.ao";
+
+export const metadata: Metadata = {
+  title: "Contactos e Localização | Grupo JC",
+  description:
+    "Entre em contacto com o Grupo JC em Luanda, Angola. Canais de atendimento, suporte, parcerias e localização institucional.",
+  alternates: {
+    canonical: "/contactos",
+  },
+  openGraph: {
+    title: "Contactos | Grupo JC",
+    description:
+      "Entre em contacto com o Grupo JC em Luanda, Angola. Canais de atendimento, suporte, parcerias e localização institucional.",
+    url: "/contactos",
+    images: [
+      {
+        url: "/brand/grupo-jc-black.svg",
+        width: 1200,
+        height: 630,
+        alt: "Contactos Grupo JC",
+      },
+    ],
+  },
+};
+
+const contactSchema = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "@id": `${siteUrl}/contactos#contact`,
+  url: `${siteUrl}/contactos`,
+  name: "Contactos Grupo JC",
+  description:
+    "Entre em contacto com o Grupo JC em Luanda, Angola. Canais de atendimento, suporte, parcerias e localização institucional.",
+  mainEntity: {
+    "@type": "Organization",
+    name: "Grupo JC",
+    url: siteUrl,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Luanda, Angola",
+      addressLocality: "Luanda",
+      addressCountry: "AO",
+    },
+  },
+};
 
 export default function ContactPage() {
   return (
-    <main className="contact-page">
-      <SiteHeader />
-      <section className="contact-section shell">
-        <div className="contact-intro">
-          <span className="eyebrow">Contactos</span>
-          <h2>Vamos conversar.</h2>
-          <p>Entre em contacto com o Grupo JC para informações institucionais, parcerias, oportunidades profissionais ou assuntos relacionados com as empresas do grupo.</p>
-          <div className="contact-details"><article><span>Localização</span><strong>Angola</strong></article><article><span>Âmbito</span><strong>Institucional · Parcerias · Candidaturas</strong></article><article><span>Disponibilidade</span><strong>Canal digital</strong></article></div>
-        </div>
-        <ContactForm />
-      </section>
-      <SiteFooter />
-    </main>
+    <>
+      <JsonLd data={contactSchema} />
+      <ContactClient />
+    </>
   );
 }

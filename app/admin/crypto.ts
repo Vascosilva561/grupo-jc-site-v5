@@ -2,7 +2,6 @@
  * Cryptographic helpers for CMS password hashing, verification, and session tokens.
  * Uses Web Crypto API (crypto.subtle), 100% compatible with Cloudflare Workers and Node.js.
  */
-import { env } from "cloudflare:workers";
 
 const PBKDF2_ITERATIONS = 100000;
 const KEY_LENGTH = 32; // 256 bits
@@ -16,6 +15,7 @@ export async function hashPassword(
   const salt = existingSaltHex
     ? hexToBytes(existingSaltHex)
     : crypto.getRandomValues(new Uint8Array(16));
+  const saltBuffer = new Uint8Array(salt).buffer;
 
   const passwordKey = await crypto.subtle.importKey(
     "raw",
@@ -28,7 +28,7 @@ export async function hashPassword(
   const derivedBits = await crypto.subtle.deriveBits(
     {
       name: "PBKDF2",
-      salt,
+      salt: saltBuffer,
       iterations: PBKDF2_ITERATIONS,
       hash: "SHA-256",
     },
@@ -121,10 +121,9 @@ async function signData(data: string): Promise<string> {
 }
 
 function getSessionSecret(): string {
-  // Runtime secrets are injected by Cloudflare Sites and must never be stored
-  // in the source tree. A local-only fallback keeps the development preview
-  // usable without weakening deployed sessions.
-  const secret = env.CMS_SESSION_SECRET as string | undefined;
+  // Runtime secrets are configured in Vercel and must never be stored in the
+  // source tree. A local-only fallback keeps development usable.
+  const secret = process.env.CMS_SESSION_SECRET;
   if (secret) return secret;
   if (process.env.NODE_ENV === "development") {
     return "local-development-session-secret-not-for-production";

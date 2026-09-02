@@ -15,10 +15,10 @@ export default async function AdminPage() {
   const user = await requireCmsUser();
   const db = await getDb();
   const [allPosts, published, categoryCount, profileCount, recent, allCategories] = await Promise.all([
-    db.select({ count: sql<number>`count(*)` }).from(posts).get(),
-    db.select({ count: sql<number>`count(*)` }).from(posts).where(eq(posts.status, "published")).get(),
-    db.select({ count: sql<number>`count(*)` }).from(categories).get(),
-    db.select({ count: sql<number>`count(*)` }).from(cmsProfiles).get(),
+    db.select({ count: sql<number>`count(*)` }).from(posts).then(([result]) => result),
+    db.select({ count: sql<number>`count(*)` }).from(posts).where(eq(posts.status, "published")).then(([result]) => result),
+    db.select({ count: sql<number>`count(*)` }).from(categories).then(([result]) => result),
+    db.select({ count: sql<number>`count(*)` }).from(cmsProfiles).then(([result]) => result),
     db.select({ id: posts.id, title: posts.title, status: posts.status, category: categories.name }).from(posts).leftJoin(categories, eq(posts.categoryId, categories.id)).orderBy(desc(posts.updatedAt)).limit(5),
     db.select({ id: categories.id, name: categories.name }).from(categories),
   ]);

@@ -3,7 +3,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { env } from "cloudflare:workers";
 import { getDb } from "../../db";
 import { cmsProfiles } from "../../db/schema";
 import {
@@ -43,7 +42,8 @@ export async function getCmsSession(): Promise<CmsUser | null> {
           })
           .from(cmsProfiles)
           .where(eq(cmsProfiles.id, payload.id))
-          .get();
+          .limit(1)
+          .then(([result]) => result);
 
         if (profile && profile.status === "active") {
           return {
@@ -111,7 +111,8 @@ export async function loginAction(
       .select()
       .from(cmsProfiles)
       .where(eq(cmsProfiles.email, email))
-      .get();
+      .limit(1)
+      .then(([result]) => result);
 
     if (!profile) {
       return { error: "Email ou senha incorretos.", email };
@@ -182,7 +183,7 @@ export async function bootstrapAdminAction(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
-  if (!env.CMS_SETUP_TOKEN || !timingSafeEqual(token, String(env.CMS_SETUP_TOKEN))) {
+  if (!process.env.CMS_SETUP_TOKEN || !timingSafeEqual(token, process.env.CMS_SETUP_TOKEN)) {
     throw new Error("Código de configuração inválido.");
   }
   if (!name || !email || password.length < 12) {

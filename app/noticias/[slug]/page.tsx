@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { and, desc, eq } from "drizzle-orm";
-import { ArrowLeft, ArrowUpRight } from "../../components/ArrowUpRight";
-import { SiteFooter } from "../../components/SiteFooter";
-import { SiteHeader } from "../../components/SiteHeader";
 import { getDb, publishScheduledPosts } from "../../../db";
 import { categories, posts } from "../../../db/schema";
-import { MarkdownContent } from "../MarkdownContent";
+import { NewsArticleClient } from "../NewsArticleClient";
+import { JsonLd } from "../../components/JsonLd";
 
 export const dynamic = "force-dynamic";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://grupojc.ao";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -17,14 +16,57 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const db = await getDb();
   const article = await db
-    .select({ title: posts.title, excerpt: posts.excerpt })
+    .select({
+      title: posts.title,
+      excerpt: posts.excerpt,
+      featuredImageUrl: posts.featuredImageUrl,
+      featuredImageAlt: posts.featuredImageAlt,
+      publishedAt: posts.publishedAt,
+    })
     .from(posts)
     .where(and(eq(posts.slug, slug), eq(posts.status, "published")))
-    .get();
+    .limit(1)
+    .then(([result]) => result);
 
-  return article
-    ? { title: article.title, description: article.excerpt }
-    : { title: "Notícia" };
+  if (!article) {
+    return { title: "Notícia | Grupo JC" };
+  }
+
+  const title = `${article.title} | Grupo JC`;
+  const description = article.excerpt || article.title;
+  const imageUrl = article.featuredImageUrl
+    ? article.featuredImageUrl.startsWith("http")
+      ? article.featuredImageUrl
+      : `${siteUrl}${article.featuredImageUrl}`
+    : `${siteUrl}/brand/grupo-jc-black.svg`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/noticias/${slug}`,
+    },
+    openGraph: {
+      type: "article",
+      title,
+      description,
+      url: `/noticias/${slug}`,
+      publishedTime: article.publishedAt || undefined,
+      authors: ["Grupo JC"],
+      images: [
+        {
+          url: imageUrl,
+          alt: article.featuredImageAlt || article.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
+  };
 }
 
 export default async function NewsArticlePage({ params }: Props) {
@@ -51,7 +93,8 @@ export default async function NewsArticlePage({ params }: Props) {
       .from(posts)
       .leftJoin(categories, eq(posts.categoryId, categories.id))
       .where(and(eq(posts.slug, slug), eq(posts.status, "published")))
-      .get(),
+      .limit(1)
+      .then(([result]) => result),
     db
       .select({
         id: posts.id,
@@ -71,95 +114,48 @@ export default async function NewsArticlePage({ params }: Props) {
       ? allPublished[(position + 1) % allPublished.length]
       : null;
 
-  const dateStr = formatDate(article.publishedAt);
-  const readingTimeStr = `${article.readingMinutes || 2} min de leitura`;
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "@id": `${siteUrl}/noticias/${article.slug}#article`,
+    headline: article.title,
+    description: article.excerpt,
+    datePublished: article.publishedAt,
+    dateModified: article.publishedAt,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${siteUrl}/noticias/${article.slug}`,
+    },
+    image: article.featuredImageUrl
+      ? [
+          article.featuredImageUrl.startsWith("http")
+            ? article.featuredImageUrl
+            : `${siteUrl}${article.featuredImageUrl}`,
+        ]
+      : [`${siteUrl}/brand/grupo-jc-black.svg`],
+    author: {
+      "@type": "Organization",
+      name: "Grupo JC",
+      url: siteUrl,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Grupo JC",
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteUrl}/brand/grupo-jc-black.svg`,
+      },
+    },
+  };
 
   return (
-    <main className="news-article-page">
-      <SiteHeader />
-      <header className="news-article-header shell">
-        <Link className="news-back" href="/noticias">
-          <ArrowLeft size={17} /> Todas as notícias
-        </Link>
-        <div className="news-article-header__copy">
-          <span>Notícias &bull; {article.categoryName || "Geral"}</span>
-          <h1>{article.title}</h1>
-        </div>
-
-        {article.featuredImageUrl ? (
-          <div className="news-article-banner">
-            <img
-              src={article.featuredImageUrl}
-              alt={article.featuredImageAlt || article.title}
-            />
-          </div>
-        ) : (
-          <NewsVisual
-            art={article.art || "network"}
-            number={position >= 0 ? position + 1 : 1}
-          />
-        )}
-
-        <div className="news-article-details">
-          <span>{article.categoryName || "Geral"}</span>
-          <i />
-          <time dateTime={article.publishedAt || ""}>{dateStr}</time>
-          <i />
-          <small>{readingTimeStr}</small>
-          <i />
-          <small>Por Grupo JC</small>
-        </div>
-      </header>
-
-      <article className="news-article-body shell">
-        <div className="news-article-body__content">
-          {article.excerpt && (
-            <p className="news-article-lead">{article.excerpt}</p>
-          )}
-          <MarkdownContent content={article.content} />
-        </div>
-      </article>
-
-      {nextArticle && nextArticle.slug !== article.slug && (
-        <Link
-          href={`/noticias/${nextArticle.slug}`}
-          className="next-company next-news"
-        >
-          <div className="shell">
-            <span>Próxima notícia</span>
-            <strong>{nextArticle.title}</strong>
-            <ArrowUpRight size={44} />
-          </div>
-        </Link>
-      )}
-
-      <SiteFooter />
-    </main>
+    <>
+      <JsonLd data={articleSchema} />
+      <NewsArticleClient
+        article={article}
+        nextArticle={nextArticle}
+        position={position}
+      />
+    </>
   );
-}
-
-function NewsVisual({ art, number }: { art: string; number: number }) {
-  return (
-    <div className={`news-visual news-visual--${art}`} aria-hidden="true">
-      <span>{String(number).padStart(2, "0")}</span>
-      <i />
-      <b />
-      <em />
-    </div>
-  );
-}
-
-function formatDate(dateString: string | null): string {
-  if (!dateString) return "Recentemente";
-  try {
-    const d = new Date(dateString);
-    if (isNaN(d.getTime())) return "Recentemente";
-    return d.toLocaleDateString("pt-PT", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  } catch {
-    return "Recentemente";
-  }
 }

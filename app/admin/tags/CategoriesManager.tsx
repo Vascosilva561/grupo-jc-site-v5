@@ -142,7 +142,7 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
           <div className="cms-col cms-col--cat-slug">Identificador</div>
           <div className="cms-col cms-col--cat-count">Notícias Atreladas</div>
           <div className="cms-col cms-col--cat-date">Data de Criação</div>
-          <div className="cms-col cms-col--actions">Ações</div>
+          <div className="cms-col cms-col--actions">Acções</div>
         </div>
 
         {filteredCategories.length === 0 ? (
@@ -204,7 +204,7 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
                     title="Eliminar categoria"
                     description={
                       <>
-                        Esta ação remove a categoria <strong>"{cat.name}"</strong> de forma permanente.
+                        Esta acção remove a categoria <strong>"{cat.name}"</strong> de forma permanente.
                       </>
                     }
                     buttonLabel="Eliminar categoria"

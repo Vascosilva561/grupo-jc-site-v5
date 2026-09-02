@@ -2,7 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { env } from "cloudflare:workers";
+import { put } from "@vercel/blob";
 import { getDb } from "../../../db";
 import { posts } from "../../../db/schema";
 import { requireCmsAdmin, requireCmsUser } from "../auth";
@@ -33,7 +33,8 @@ export async function updatePost(id: number, formData: FormData) {
     .select({ publishedAt: posts.publishedAt, authorName: posts.authorName })
     .from(posts)
     .where(eq(posts.id, id))
-    .get();
+    .limit(1)
+    .then(([result]) => result);
 
   if (!existing) redirect("/admin/posts");
 
@@ -99,17 +100,25 @@ async function resolveFeaturedImage(formData: FormData): Promise<string | null> 
   const suppliedUrl = value(formData, "featuredImageUrl");
   const file = formData.get("featuredImageFile");
   if (!(file instanceof File) || file.size === 0) return suppliedUrl || null;
-  if (!file.type.startsWith("image/") || file.size > 5 * 1024 * 1024) {
-    throw new Error("A imagem deve ser válida e ter no máximo 5MB.");
+  if (!file.type.startsWith("image/") || file.size > 15 * 1024 * 1024) {
+    throw new Error("A imagem deve ser válida e ter no máximo 15MB.");
   }
-  const bucket = (env as Record<string, any>).MEDIA;
-  if (!bucket) {
-    throw new Error("O armazenamento de imagens ainda não está configurado. Utilize uma URL de imagem ou configure o bucket MEDIA.");
+  let extension = "webp";
+  if (file.type === "image/svg+xml" || file.type === "image/svg" || file.name.endsWith(".svg")) {
+    extension = "svg";
+  } else if (file.type === "image/webp" || file.name.endsWith(".webp")) {
+    extension = "webp";
+  } else {
+    extension = file.type.split("/")[1]?.replace(/[^a-z0-9]/gi, "") || "webp";
   }
-  const extension = file.type.split("/")[1]?.replace(/[^a-z0-9]/gi, "") || "bin";
+
   const key = `news/${crypto.randomUUID()}.${extension}`;
-  await bucket.put(key, file.stream(), { httpMetadata: { contentType: file.type } });
-  return `/media/${key}`;
+  const blob = await put(key, file, {
+    access: "public",
+    contentType: file.type || "image/webp",
+    addRandomSuffix: false,
+  });
+  return blob.url;
 }
 
 function value(formData: FormData, name: string): string {

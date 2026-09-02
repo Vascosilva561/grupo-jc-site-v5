@@ -1,45 +1,66 @@
+"use client";
+
 import Link from "next/link";
-import { companies, navigation } from "../data";
 import { ArrowUpRight } from "./ArrowUpRight";
+import { useLanguage } from "../translations";
 
 export function SiteFooter() {
+  const { t, companies } = useLanguage();
+
+  const groupNav = [
+    { label: t.header.about, href: "/grupo" },
+    { label: t.header.companies, href: "/empresas" },
+    { label: t.header.areas, href: "/areas" },
+    { label: t.header.impact, href: "/impacto" },
+  ];
+
   return (
     <footer className="site-footer">
       <div className="shell">
         <div className="footer-top">
           <div>
             <img src="/brand/grupo-jc-white.svg" alt="Grupo JC" className="footer-logo" />
-            <p>Empresas que desenvolvem soluções, valorizam o talento e criam oportunidades para acompanhar a evolução de Angola.</p>
+            <p>{t.footer.tagline}</p>
           </div>
           <Link href="/contactos" className="footer-contact">
-            Vamos conversar <ArrowUpRight size={28} />
+            {t.footer.letsTalk} <ArrowUpRight size={28} />
           </Link>
         </div>
         <div className="footer-grid">
           <div>
-            <span className="footer-label">Grupo JC</span>
-            {navigation.slice(0, 4).map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
+            <span className="footer-label">{t.footer.aboutGroup}</span>
+            {groupNav.map((item) => (
+              <Link key={item.href} href={item.href}>
+                {item.label}
+              </Link>
+            ))}
           </div>
           <div>
-            <span className="footer-label">Empresas</span>
-            {companies.map((company) => <Link key={company.slug} href={`/empresas/${company.slug}`}>{company.name}</Link>)}
+            <span className="footer-label">{t.footer.companiesLabel}</span>
+            {companies.map((company) => (
+              <Link key={company.slug} href={`/empresas/${company.slug}`}>
+                {company.name}
+              </Link>
+            ))}
           </div>
           <div>
-            <span className="footer-label">Oportunidades</span>
-            <Link href="/candidatura">Candidatura espontânea</Link>
+            <span className="footer-label">{t.footer.opportunities}</span>
+            <Link href="/candidatura">{t.footer.spontaneousApplication}</Link>
           </div>
           <div>
-            <span className="footer-label">Ligações</span>
-            <Link href="/noticias">Notícias</Link>
-            <Link href="/contactos">Contactos</Link>
-            <Link href="/privacidade">Privacidade</Link>
-            <Link href="/termos">Termos</Link>
+            <span className="footer-label">{t.footer.links}</span>
+            <Link href="/noticias">{t.footer.news}</Link>
+            <Link href="/contactos">{t.footer.contacts}</Link>
+            <Link href="/privacidade">{t.footer.privacy}</Link>
+            <Link href="/termos">{t.footer.terms}</Link>
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© 2026 Grupo JC. Todos os direitos reservados.</span>
-          <span>Potencial que gera progresso.</span>
-          <span>Angola</span>
+          <span>{t.footer.rights}</span>
+          <span className="footer-progress">
+            {t.footer.progressSlogan} <img src="/assets/flag-angola.svg" alt="Bandeira de Angola" />
+          </span>
+          <span>{t.footer.country}</span>
         </div>
       </div>
     </footer>

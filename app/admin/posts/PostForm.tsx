@@ -278,7 +278,7 @@ export function PostForm({
         <div className="cms-post-form__footer-info">
           {status === "scheduled" && (
             <span className="cms-schedule-badge">
-              <Clock size={14} /> Agendamento ativo
+              <Clock size={14} /> Agendamento activo
             </span>
           )}
           {status === "published" && (

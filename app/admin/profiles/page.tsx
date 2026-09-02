@@ -18,7 +18,7 @@ const roleOptions = [
 ];
 
 const statusOptions = [
-  { value: "active", label: "🟢 Ativo" },
+  { value: "active", label: "🟢 Activo" },
   { value: "inactive", label: "⚪ Inativo" },
 ];
 
@@ -60,7 +60,7 @@ function Fields({
         <label className="cms-field-label">
           Palavra-passe {profile ? <span className="cms-optional-text">(deixe em branco para manter)</span> : <span className="cms-required-dot">*</span>}
         </label>
-        <PasswordField required={!profile} placeholder={profile ? "Deixe em branco para manter a atual" : "Mínimo 12 caracteres"}/>
+        <PasswordField required={!profile} placeholder={profile ? "Deixe em branco para manter a actual" : "Mínimo 12 caracteres"}/>
       </div>
 
       <CmsSelect
@@ -114,7 +114,7 @@ export default async function ProfilesPage() {
           <div className="cms-col cms-col--profile-info">Perfil</div>
           <div className="cms-col cms-col--profile-role">Função</div>
           <div className="cms-col cms-col--profile-status">Estado</div>
-          <div className="cms-col cms-col--actions">Ações</div>
+          <div className="cms-col cms-col--actions">Acções</div>
         </div>
         {all.map((profile) => (
           <div className="cms-table__row cms-table__row--profiles" key={profile.id}>
@@ -131,7 +131,7 @@ export default async function ProfilesPage() {
             </div>
             <div className="cms-col cms-col--profile-status">
               <em className={`cms-pill cms-pill--${profile.status}`}>
-                {profile.status === "active" ? "🟢 Ativo" : "⚪ Inativo"}
+                {profile.status === "active" ? "🟢 Activo" : "⚪ Inactivo"}
               </em>
             </div>
             <div className="cms-col cms-col--actions">
@@ -156,14 +156,14 @@ export default async function ProfilesPage() {
                 >
                   <button
                     className="cms-icon-button"
-                    title={profile.status === "active" ? "Desativar" : "Ativar"}
+                    title={profile.status === "active" ? "Desactivar" : "Activar"}
                   >
                     <UserMinus size={16} />
                   </button>
                 </form>
                 <DeleteConfirmModal
                   title="Eliminar perfil"
-                  description={<>Esta ação elimina o perfil <strong>"{profile.name}"</strong> permanentemente. A conta não poderá ser recuperada.</>}
+                  description={<>Esta acção elimina o perfil <strong>"{profile.name}"</strong> permanentemente. A conta não poderá ser recuperada.</>}
                   buttonLabel="Eliminar perfil"
                   action={deleteProfile.bind(null, profile.id)}
                   trigger={<Trash2 size={16} />}

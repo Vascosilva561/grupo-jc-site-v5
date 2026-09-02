@@ -208,7 +208,7 @@ export function PostsManager({ initialPosts, categories, userDisplayName }: Post
           <div className="cms-col cms-col--author">Autor / Editor</div>
           <div className="cms-col cms-col--date">Data de Publicação</div>
           <div className="cms-col cms-col--status">Estado</div>
-          <div className="cms-col cms-col--actions">Ações</div>
+          <div className="cms-col cms-col--actions">Acções</div>
         </div>
 
         {filteredPosts.length === 0 ? (
@@ -324,7 +324,7 @@ export function PostsManager({ initialPosts, categories, userDisplayName }: Post
                       title="Remover notícia"
                       description={
                         <>
-                          Esta ação elimina a notícia <strong>"{post.title}"</strong> de
+                          Esta acção elimina a notícia <strong>"{post.title}"</strong> de
                           forma permanente e irreversível.
                         </>
                       }

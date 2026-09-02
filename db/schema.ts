@@ -1,23 +1,23 @@
 import { sql } from "drizzle-orm";
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 /** Editorial categories shown in the public news section. */
-export const categories = sqliteTable("categories", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const categories = pgTable("categories", {
+  id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
   slug: text("slug").notNull().unique(),
   description: text("description"),
-  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().defaultNow(),
 });
 
 /**
  * CMS news content. The body is stored as Markdown so it is portable and can
  * be rendered consistently by the public site and future channels.
  */
-export const posts = sqliteTable(
+export const posts = pgTable(
   "posts",
   {
-    id: integer("id").primaryKey({ autoIncrement: true }),
+    id: serial("id").primaryKey(),
     slug: text("slug").notNull().unique(),
     title: text("title").notNull(),
     excerpt: text("excerpt").notNull().default(""),
@@ -43,9 +43,9 @@ export const posts = sqliteTable(
       .notNull()
       .default("draft"),
     readingMinutes: integer("reading_minutes").notNull().default(1),
-    publishedAt: text("published_at"),
-    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    publishedAt: timestamp("published_at", { withTimezone: true, mode: "string" }),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().defaultNow(),
   },
   (table) => [
     index("idx_posts_status_published_at").on(table.status, table.publishedAt),
@@ -53,14 +53,14 @@ export const posts = sqliteTable(
   ],
 );
 
-export const cmsProfiles = sqliteTable("cms_profiles", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const cmsProfiles = pgTable("cms_profiles", {
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash"),
   passwordSalt: text("password_salt"),
   role: text("role", { enum: ["admin", "editor"] }).notNull().default("editor"),
   status: text("status", { enum: ["active", "inactive"] }).notNull().default("active"),
-  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().defaultNow(),
 });

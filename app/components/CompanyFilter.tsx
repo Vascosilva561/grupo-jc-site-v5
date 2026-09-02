@@ -3,23 +3,37 @@
 import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { companyCardTints, companyChipThemes, type Company } from "../data";
+import { companyCardTints, companyChipThemes } from "../data";
 import { ArrowUpRight } from "./ArrowUpRight";
 import { SiteHeader } from "./SiteHeader";
+import { useLanguage } from "../translations";
 
-const filters = ["Todos", "Tecnologia", "Pagamentos", "Serviços financeiros", "Entretenimento"];
+type FilterKey = "all" | "Tecnologia" | "Pagamentos" | "Serviços financeiros" | "Entretenimento";
 
-export function CompanyFilter({ companies }: { companies: Company[] }) {
-  const [active, setActive] = useState("Todos");
+export function CompanyFilter() {
+  const { t, companies } = useLanguage();
+  const [active, setActive] = useState<FilterKey>("all");
   const capsuleRef = useRef<HTMLDivElement>(null);
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  const visible = active === "Todos" ? companies : companies.filter((company) => company.category === active);
+
+  const filterItems: Array<{ key: FilterKey; label: string }> = [
+    { key: "all", label: t.empresas.filters.all },
+    { key: "Tecnologia", label: t.empresas.filters.tech },
+    { key: "Pagamentos", label: t.empresas.filters.payments },
+    { key: "Serviços financeiros", label: t.empresas.filters.finServices },
+    { key: "Entretenimento", label: t.empresas.filters.entertainment },
+  ];
+
+  const visible = active === "all" ? companies : companies.filter((company) => company.category === active);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       const requestedCategory = new URLSearchParams(window.location.search).get("categoria");
-      if (requestedCategory && filters.includes(requestedCategory)) {
-        setActive(requestedCategory);
+      if (requestedCategory) {
+        const found = filterItems.find((f) => f.label.toLowerCase() === requestedCategory.toLowerCase() || f.key.toLowerCase() === requestedCategory.toLowerCase());
+        if (found) {
+          setActive(found.key);
+        }
       }
     });
 
@@ -36,14 +50,14 @@ export function CompanyFilter({ companies }: { companies: Company[] }) {
     });
   }, [active]);
 
-  const selectFilter = (filter: string) => {
-    setActive(filter);
+  const selectFilter = (key: FilterKey) => {
+    setActive(key);
 
     const url = new URL(window.location.href);
-    if (filter === "Todos") {
+    if (key === "all") {
       url.searchParams.delete("categoria");
     } else {
-      url.searchParams.set("categoria", filter);
+      url.searchParams.set("categoria", key);
     }
     window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
   };
@@ -54,11 +68,9 @@ export function CompanyFilter({ companies }: { companies: Company[] }) {
       <div className="empresas-hero-wrap">
         <SiteHeader dark />
         <section className="empresas-hero shell">
-          <span className="eyebrow eyebrow--light">O nosso ecossistema</span>
-          <h1>Um ecossistema preparado para crescer.</h1>
-          <p>
-            Conheça as empresas que fazem parte do Grupo JC e descubra como cada uma contribui para criar novas soluções e oportunidades.
-          </p>
+          <span className="eyebrow eyebrow--light">{t.empresas.hero.eyebrow}</span>
+          <h1>{t.empresas.hero.title}</h1>
+          <p>{t.empresas.hero.description}</p>
 
           {/* White capsule switch tab filter bar */}
           <div
@@ -66,23 +78,25 @@ export function CompanyFilter({ companies }: { companies: Company[] }) {
             className="empresas-filter-capsule"
             aria-label="Filtrar empresas"
           >
-            {filters.map((filter) => (
+            {filterItems.map((item) => (
               <button
-                key={filter}
+                key={item.key}
                 type="button"
-                className={active === filter ? "active" : ""}
-                aria-pressed={active === filter}
-                ref={(button) => { buttonRefs.current[filter] = button; }}
-                onClick={() => selectFilter(filter)}
+                className={active === item.key ? "active" : ""}
+                aria-pressed={active === item.key}
+                ref={(button) => {
+                  buttonRefs.current[item.key] = button;
+                }}
+                onClick={() => selectFilter(item.key)}
               >
-                {filter}
+                {item.label}
               </button>
             ))}
           </div>
         </section>
       </div>
 
-      {/* Directory Grid Section - Outside the hero wrap on normal light background */}
+      {/* Directory Grid Section */}
       <section className="content-section empresas-directory-section shell">
         <div className="directory-grid" aria-live="polite">
           {visible.map((company, index) => {

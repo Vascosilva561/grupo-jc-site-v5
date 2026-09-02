@@ -85,7 +85,7 @@ export function IsometricEcosystem() {
         viewBox="0 0 1000 720"
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label="Empresas ligadas em perspetiva isométrica ao cubo central do Grupo JC"
+        aria-label="Empresas ligadas em perspectiva isométrica ao cubo central do Grupo JC"
       >
         <defs>
           <pattern id="iso-grid" width="72" height="42" patternUnits="userSpaceOnUse">
