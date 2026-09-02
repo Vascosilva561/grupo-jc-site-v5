@@ -10,7 +10,7 @@ function youtubeEmbedUrl(url: string) {
   try {
     const parsed = new URL(url);
     const id = parsed.hostname.includes("youtu.be") ? parsed.pathname.slice(1) : parsed.searchParams.get("v") ?? parsed.pathname.split("/").filter(Boolean).pop();
-    return id ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&playsinline=1&rel=0` : null;
+    return id ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${encodeURIComponent(id)}&rel=0` : null;
   } catch { return null; }
 }
 
@@ -57,7 +57,7 @@ export function HomeHeroVideo({ source }: { source: VideoSource }) {
 
   const progress = `${duration ? (currentTime / duration) * 100 : 0}%`;
   return <div className="home-v2-hero-video home-v2-hero-video--custom">
-    <video ref={videoRef} autoPlay muted playsInline preload="metadata" poster={source.kind === "upload" ? source.poster : undefined} onClick={togglePlayback} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} onEnded={() => setIsPlaying(false)} onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)} onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}>
+    <video ref={videoRef} autoPlay loop muted playsInline preload="metadata" poster={source.kind === "upload" ? source.poster : undefined} onClick={togglePlayback} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} onEnded={() => setIsPlaying(false)} onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)} onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}>
       <source src={source.url} type={source.url.endsWith(".webm") ? "video/webm" : undefined} />
       O seu navegador não suporta a reprodução de vídeo.
     </video>
