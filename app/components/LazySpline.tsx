@@ -89,10 +89,9 @@ export function LazySpline() {
     if (!viewer) return;
 
     const handleLoadComplete = () => setHasFailed(false);
-    const handleLoadError = () => setHasFailed(true);
     viewer.addEventListener("load-complete", handleLoadComplete);
-    viewer.addEventListener("error", handleLoadError);
-    viewer.addEventListener("context-loss", handleLoadError);
+    const handleContextLoss = () => setHasFailed(true);
+    viewer.addEventListener("context-loss", handleContextLoss);
 
     // Some mobile WebGL implementations fail silently. Never leave a blank
     // canvas covering the section when the scene cannot be rendered.
@@ -101,8 +100,7 @@ export function LazySpline() {
     return () => {
       window.clearTimeout(timeout);
       viewer.removeEventListener("load-complete", handleLoadComplete);
-      viewer.removeEventListener("error", handleLoadError);
-      viewer.removeEventListener("context-loss", handleLoadError);
+      viewer.removeEventListener("context-loss", handleContextLoss);
     };
   }, [isViewerReady, prefersReducedMotion, hasFailed]);
 
