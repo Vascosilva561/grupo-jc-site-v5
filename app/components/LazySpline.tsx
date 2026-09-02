@@ -31,6 +31,7 @@ export function LazySpline() {
   const retryCountRef = useRef(0);
   const retryTimerRef = useRef<number | null>(null);
   const [mountId] = useState(() => Date.now());
+  const isViewerActive = isViewerReady && !prefersReducedMotion && !isAndroid && !hasFailed;
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -163,7 +164,11 @@ export function LazySpline() {
   }, []);
 
   return (
-    <div ref={containerRef} className="home-v2-story__spline" aria-hidden="true">
+    <div
+      ref={containerRef}
+      className={`home-v2-story__spline${isViewerActive ? " home-v2-story__spline--viewer-active" : ""}`}
+      aria-hidden="true"
+    >
       <div className="home-v2-story__spline-fallback" />
       {isViewerReady && !prefersReducedMotion && !isAndroid && !hasFailed && (
         <spline-viewer
