@@ -183,18 +183,31 @@ export async function bootstrapAdminAction(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
-  if (!process.env.CMS_SETUP_TOKEN || !timingSafeEqual(token, process.env.CMS_SETUP_TOKEN)) {
-    throw new Error("Código de configuração inválido.");
+  const configuredToken = process.env.CMS_SETUP_TOKEN?.trim().replace(/^(\"|')(.*)\1$/, "$2");
+  if (!configuredToken || !timingSafeEqual(token, configuredToken)) {
+    redirect("/admin/setup?error=invalid-token");
   }
   if (!name || !email || password.length < 12) {
-    throw new Error("Preencha os dados e utilize uma palavra-passe de pelo menos 12 caracteres.");
+    redirect("/admin/setup?error=invalid-data");
   }
-  const db = await getDb();
-  const existing = await db.select({ id: cmsProfiles.id }).from(cmsProfiles).limit(1);
+  let db;
+  let existing;
+  try {
+    db = await getDb();
+    existing = await db.select({ id: cmsProfiles.id }).from(cmsProfiles).limit(1);
+  } catch (error) {
+    console.error("CMS setup database error", error);
+    redirect("/admin/setup?error=database");
+  }
   if (existing.length) redirect("/admin/login");
   const { hashPassword } = await import("./crypto");
   const { hash, salt } = await hashPassword(password);
-  await db.insert(cmsProfiles).values({ name, email, passwordHash: hash, passwordSalt: salt, role: "admin", status: "active" });
+  try {
+    await db.insert(cmsProfiles).values({ name, email, passwordHash: hash, passwordSalt: salt, role: "admin", status: "active" });
+  } catch (error) {
+    console.error("CMS setup insert error", error);
+    redirect("/admin/setup?error=database");
+  }
   redirect("/admin/login");
 }
 
