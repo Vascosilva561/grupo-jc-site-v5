@@ -115,7 +115,15 @@ export function LazySpline() {
 
     // Some mobile WebGL implementations fail silently. Never leave a blank
     // canvas covering the section when the scene cannot be rendered.
-    const timeout = window.setTimeout(() => setHasFailed(true), 12000);
+    const timeout = window.setTimeout(() => {
+      const canvas = viewerRef.current?.shadowRoot?.querySelector("canvas");
+      const canvasIsVisible = canvas && getComputedStyle(canvas).visibility !== "hidden";
+
+      // Spline's load-complete event is not emitted consistently by every
+      // mobile browser. Keep a scene whose canvas is already visible; only
+      // switch to the fallback when rendering never became visible.
+      if (!canvasIsVisible) setHasFailed(true);
+    }, 12000);
 
     return () => {
       window.clearTimeout(timeout);
