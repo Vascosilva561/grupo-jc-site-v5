@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { Clock, Sparkles } from "lucide-react";
 import { BannerUpload } from "../components/BannerUpload";
 import { CmsSelect, type CmsSelectOption } from "../components/CmsSelect";
@@ -58,6 +58,13 @@ export function PostForm({
   const [status, setStatus] = useState<string>(current.status || "draft");
   const [content, setContent] = useState<string>(current.content || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [timezoneOffset, setTimezoneOffset] = useState(0);
+
+  useEffect(() => {
+    // datetime-local has no timezone information. Send the browser offset so
+    // the server can preserve the time chosen by the editor (e.g. Luanda).
+    setTimezoneOffset(new Date().getTimezoneOffset());
+  }, []);
 
   const titleId = useId();
   const slugId = useId();
@@ -139,6 +146,7 @@ export function PostForm({
         name="authorName"
         value={current.authorName ?? authorDefault}
       />
+      <input type="hidden" name="timezoneOffset" value={timezoneOffset} />
       <input
         type="hidden"
         name="readingMinutes"

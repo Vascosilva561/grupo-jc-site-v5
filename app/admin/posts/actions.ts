@@ -63,6 +63,7 @@ async function readPostValues(formData: FormData, defaultAuthor: string) {
   const readingMinutes = Number(value(formData, "readingMinutes")) || 3;
   const authorName = value(formData, "authorName") || defaultAuthor || "Administrador";
   const publishedAtRaw = value(formData, "publishedAt");
+  const timezoneOffset = numberOrZero(value(formData, "timezoneOffset"));
   const featuredImageUrl = await resolveFeaturedImage(formData);
   const featuredImageAlt = value(formData, "featuredImageAlt") || null;
 
@@ -72,7 +73,7 @@ async function readPostValues(formData: FormData, defaultAuthor: string) {
 
   let publishedAt: string | null = null;
   if (publishedAtRaw) {
-    const parsed = new Date(publishedAtRaw);
+    const parsed = parseLocalDateTime(publishedAtRaw, timezoneOffset);
     if (!isNaN(parsed.getTime())) {
       publishedAt = parsed.toISOString();
     }
@@ -129,6 +130,22 @@ function value(formData: FormData, name: string): string {
 function numberOrNull(input: string): number | null {
   const parsed = Number(input);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
+function numberOrZero(input: string): number {
+  const parsed = Number(input);
+  return Number.isFinite(parsed) && Number.isInteger(parsed) ? parsed : 0;
+}
+
+/** Convert a datetime-local value using the editor's browser timezone. */
+function parseLocalDateTime(input: string, timezoneOffset: number): Date {
+  // getTimezoneOffset() is UTC minus local time. ISO offsets use local minus UTC.
+  const isoOffsetMinutes = -timezoneOffset;
+  const sign = isoOffsetMinutes >= 0 ? "+" : "-";
+  const absolute = Math.abs(isoOffsetMinutes);
+  const hours = String(Math.floor(absolute / 60)).padStart(2, "0");
+  const minutes = String(absolute % 60).padStart(2, "0");
+  return new Date(`${input}:00${sign}${hours}:${minutes}`);
 }
 
 function slugify(input: string): string {
