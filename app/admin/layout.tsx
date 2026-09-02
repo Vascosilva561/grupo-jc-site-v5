@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Grupo JC - CMS",
+  title: {
+    default: "Grupo JC - CMS",
+    template: "%s",
+  },
 };
 
 export default function AdminRouteLayout({ children }: Readonly<{ children: React.ReactNode }>) {
