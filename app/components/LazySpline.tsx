@@ -144,7 +144,7 @@ export function LazySpline() {
           loading="eager"
           loading-anim
           loading-anim-type="spinner-big-light"
-          background="#111827"
+          background="transparent"
         />
       )}
     </div>
